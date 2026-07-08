@@ -1,0 +1,1906 @@
+<!doctype html>
+<html lang="nb" id="htmlRoot">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interaktiv kvintsirkel med skalaer, fortegn, transponering og grep for hele orkesteret — på 7 språk. Interactive circle of fifths for the whole orchestra, in 7 languages.">
+<title>Notesirkelen · Notecircle</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎺</text></svg>">
+<style>
+:root {
+  --bg: #FBFAF7;
+  --surface: #FFFFFF;
+  --surface2: #F5F2EA;
+  --ink: #26221A;
+  --muted: #77705E;
+  --line: #E4DFD2;
+  --line-strong: #CFC8B5;
+  --brass: #A67C1B;
+  --brass-strong: #7E5E10;
+  --brass-soft: #F1E8CF;
+  --slate: #4A6076;
+  --slate-strong: #35485A;
+  --slate-soft: #E5EBF1;
+  --on-brass: #FFFDF5;
+  --on-slate: #FFFDF5;
+  --staff-ink: #343026;
+  --shadow: 0 1px 2px rgba(38,34,26,.05), 0 4px 16px rgba(38,34,26,.06);
+  --play: #B05A1F;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #181510;
+    --surface: #211D15;
+    --surface2: #2A2519;
+    --ink: #ECE5D3;
+    --muted: #A79C82;
+    --line: #3A3424;
+    --line-strong: #4C4430;
+    --brass: #D9A93C;
+    --brass-strong: #E8BE5C;
+    --brass-soft: #3B3115;
+    --slate: #93ACC7;
+    --slate-strong: #B4C8DD;
+    --slate-soft: #242E38;
+    --on-brass: #241B05;
+    --on-slate: #101820;
+    --staff-ink: #DDD5C0;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    --play: #E08040;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #181510;
+  --surface: #211D15;
+  --surface2: #2A2519;
+  --ink: #ECE5D3;
+  --muted: #A79C82;
+  --line: #3A3424;
+  --line-strong: #4C4430;
+  --brass: #D9A93C;
+  --brass-strong: #E8BE5C;
+  --brass-soft: #3B3115;
+  --slate: #93ACC7;
+  --slate-strong: #B4C8DD;
+  --slate-soft: #242E38;
+  --on-brass: #241B05;
+  --on-slate: #101820;
+  --staff-ink: #DDD5C0;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  --play: #E08040;
+}
+:root[data-theme="light"] {
+  --bg: #FBFAF7;
+  --surface: #FFFFFF;
+  --surface2: #F5F2EA;
+  --ink: #26221A;
+  --muted: #77705E;
+  --line: #E4DFD2;
+  --line-strong: #CFC8B5;
+  --brass: #A67C1B;
+  --brass-strong: #7E5E10;
+  --brass-soft: #F1E8CF;
+  --slate: #4A6076;
+  --slate-strong: #35485A;
+  --slate-soft: #E5EBF1;
+  --on-brass: #FFFDF5;
+  --on-slate: #FFFDF5;
+  --staff-ink: #343026;
+  --shadow: 0 1px 2px rgba(38,34,26,.05), 0 4px 16px rgba(38,34,26,.06);
+  --play: #B05A1F;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.serif, h1, h2, h3, .keyname {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "URW Palladio L", Georgia, serif;
+}
+h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+.page { max-width: 1240px; margin: 0 auto; padding: 20px 20px 60px; }
+
+/* ---------- Header ---------- */
+header.top {
+  display: flex; flex-wrap: wrap; gap: 16px 28px;
+  align-items: flex-end; justify-content: space-between;
+  padding: 10px 2px 18px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 20px;
+}
+header.top h1 { font-size: 34px; letter-spacing: .01em; line-height: 1.1; }
+header.top h1 .clefmark { color: var(--brass); }
+header.top .sub { margin: 6px 0 0; color: var(--muted); max-width: 56ch; }
+.top-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* Segmented control */
+.seg {
+  display: inline-flex; border: 1px solid var(--line-strong);
+  border-radius: 8px; overflow: hidden; background: var(--surface);
+}
+.seg button {
+  border: 0; background: transparent; padding: 7px 13px; cursor: pointer;
+  color: var(--muted); white-space: nowrap; line-height: 1.2;
+  border-left: 1px solid var(--line);
+  transition: background .15s, color .15s;
+}
+.seg button:first-child { border-left: 0; }
+.seg button:disabled { opacity: .35; cursor: default; }
+.seg button[aria-pressed="true"] {
+  background: var(--ink); color: var(--bg); font-weight: 600;
+}
+.seg.brassy button[aria-pressed="true"] { background: var(--brass); color: var(--on-brass); }
+.seg-label { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); display: block; margin-bottom: 4px; }
+
+/* ---------- Layout ---------- */
+main.layout {
+  display: grid; gap: 20px;
+  grid-template-columns: minmax(330px, 430px) minmax(0, 1fr);
+  align-items: start;
+}
+@media (max-width: 940px) { main.layout { grid-template-columns: minmax(0,1fr); } }
+.col { display: grid; gap: 20px; min-width: 0; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: var(--shadow); padding: 18px;
+  min-width: 0;
+}
+.card > h2 { font-size: 19px; margin-bottom: 4px; }
+.card .hint { color: var(--muted); font-size: 13px; margin: 0 0 10px; }
+
+/* ---------- Circle ---------- */
+.card-circle { padding: 14px 14px 10px; }
+#circleSvg { width: 100%; height: auto; display: block; }
+#circleSvg .segpath { cursor: pointer; transition: fill .15s, opacity .15s; }
+#circleSvg .segpath:hover { opacity: .82; }
+#circleSvg text { pointer-events: none; user-select: none; }
+.circle-foot {
+  display: flex; justify-content: space-between; gap: 10px; align-items: center;
+  padding: 8px 6px 4px; flex-wrap: wrap;
+}
+.circle-foot .legend { display: flex; gap: 14px; color: var(--muted); font-size: 12.5px; }
+.legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.dot.dur { background: var(--brass); }
+.dot.moll { background: var(--slate); }
+button.ghost {
+  border: 1px solid var(--line-strong); background: var(--surface);
+  border-radius: 7px; padding: 5px 11px; cursor: pointer; font-size: 13px;
+  transition: background .15s;
+}
+button.ghost:hover { background: var(--surface2); }
+button.ghost:disabled { opacity: .4; cursor: default; }
+
+/* ---------- Key info ---------- */
+#keyInfo .keyname { font-size: 27px; line-height: 1.15; }
+#keyInfo .keysub { color: var(--muted); margin: 2px 0 12px; }
+.factgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+@media (max-width: 480px) { .factgrid { grid-template-columns: 1fr; } }
+.fact {
+  border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px;
+  background: var(--surface2); cursor: default;
+}
+.fact.clickable { cursor: pointer; transition: border-color .15s, background .15s; }
+.fact.clickable:hover { border-color: var(--brass); }
+.fact b { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.fact span { font-size: 15px; }
+.fact .big { font-size: 17px; font-weight: 600; }
+.trumpetline {
+  margin-top: 12px; padding: 10px 12px; border-radius: 8px;
+  background: var(--brass-soft); border: 1px solid var(--line);
+  font-size: 14px;
+}
+.trumpetline b { color: var(--brass-strong); }
+
+/* ---------- Controls ---------- */
+.controls { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: flex-end; }
+.ctl { display: block; }
+select#scaleSel {
+  font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line-strong); border-radius: 8px; padding: 7px 10px;
+  max-width: 250px;
+}
+input[type="range"] { accent-color: var(--brass); vertical-align: middle; }
+.tempoval { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; margin-left: 6px; }
+button.play {
+  border: 0; border-radius: 8px; padding: 9px 20px 9px 16px; cursor: pointer;
+  background: var(--brass); color: var(--on-brass); font-weight: 650; font-size: 15px;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background .15s, transform .05s;
+}
+button.play:hover { background: var(--brass-strong); }
+button.play:active { transform: translateY(1px); }
+button.play .tri { font-size: 12px; }
+label.chk { display: inline-flex; gap: 7px; align-items: center; font-size: 13.5px; color: var(--muted); cursor: pointer; }
+label.chk input { accent-color: var(--brass); }
+
+/* ---------- Staff ---------- */
+.staffcard h2 { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+.staffcard h2 .mode-tag {
+  font-family: system-ui, sans-serif; font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--slate); background: var(--slate-soft);
+  border-radius: 20px; padding: 3px 10px;
+}
+.staff-wrap { overflow-x: auto; padding: 4px 0 2px; }
+.staff-wrap svg { display: block; }
+.staffnote { cursor: pointer; }
+.staffnote .notehead, .staffnote text { transition: fill .12s; }
+.staffnote.playing .notehead { fill: var(--play); }
+.staffnote.playing .nlabel { fill: var(--play); }
+.staffnote:hover .notehead { fill: var(--brass-strong); }
+.pattern-line { color: var(--muted); font-size: 13px; margin: 8px 2px 0; }
+.pattern-line b { color: var(--ink); }
+
+/* ---------- Keyboard ---------- */
+#kbdSvg { width: 100%; height: auto; display: block; }
+
+/* ---------- Levels ---------- */
+.levels { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+@media (max-width: 1020px) { .levels { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 520px) { .levels { grid-template-columns: minmax(0,1fr); } }
+.level {
+  border: 1px solid var(--line); border-radius: 9px; padding: 13px 14px 12px;
+  background: var(--surface2); display: flex; flex-direction: column; gap: 8px;
+  position: relative;
+}
+.level.active { border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); background: var(--surface); }
+.level .lvl-head {
+  display: flex; align-items: baseline; gap: 8px;
+  background: none; border: 0; padding: 0; cursor: pointer; text-align: left;
+  font: inherit; color: inherit; width: 100%;
+}
+.level .lvl-num {
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 24px; color: var(--brass); font-weight: 700; line-height: 1;
+}
+.level h3 { font-size: 16px; }
+.level p { margin: 0; font-size: 13px; color: var(--muted); }
+.level ul { margin: 0; padding-left: 17px; font-size: 12.5px; color: var(--muted); display: grid; gap: 3px; }
+.level .lvl-keys { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; padding-top: 4px; }
+.lvl-keys button {
+  border: 1px solid var(--line-strong); background: var(--surface);
+  border-radius: 6px; padding: 2px 8px; font-size: 12.5px; cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.lvl-keys button:hover { border-color: var(--brass); color: var(--brass-strong); }
+
+/* ---------- Theory / reference ---------- */
+.theory { margin-top: 26px; display: grid; gap: 12px; }
+.theory h2.sect {
+  font-size: 22px; padding-bottom: 8px; border-bottom: 2px solid var(--ink);
+  margin-bottom: 6px;
+}
+details.tbox {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+details.tbox summary {
+  cursor: pointer; padding: 14px 18px; font-weight: 600; font-size: 16px;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  list-style: none; display: flex; align-items: center; gap: 10px;
+}
+details.tbox summary::-webkit-details-marker { display: none; }
+details.tbox summary::before {
+  content: ""; width: 8px; height: 8px; flex: 0 0 auto;
+  border-right: 2px solid var(--brass); border-bottom: 2px solid var(--brass);
+  transform: rotate(-45deg); transition: transform .15s; margin-top: -2px;
+}
+details.tbox[open] summary::before { transform: rotate(45deg); }
+details.tbox .tbody { padding: 2px 18px 18px; }
+details.tbox .tbody > p { max-width: 72ch; margin: 8px 0; }
+details.tbox .tbody code {
+  background: var(--surface2); border: 1px solid var(--line);
+  border-radius: 5px; padding: 1px 6px; font-size: 13px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+.scroll-x { overflow-x: auto; }
+table.ref { border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
+table.ref th, table.ref td { border: 1px solid var(--line); padding: 6px 11px; text-align: left; }
+table.ref th { background: var(--surface2); font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+table.ref td { font-variant-numeric: tabular-nums; }
+table.ref td.notecell { font-weight: 600; }
+table.ref tr.rowhl td { background: var(--brass-soft); }
+
+/* Fingering chart grid */
+.chartgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 8px; }
+.chartcell {
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 6px 7px;
+  display: grid; justify-items: center; gap: 4px; background: var(--surface2);
+  transition: border-color .15s;
+}
+.chartcell.inscale { border-color: var(--brass); background: var(--brass-soft); }
+.chartcell .cname { font-weight: 650; font-size: 14px; line-height: 1.2; text-align: center; }
+.chartcell .coct { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chartcell svg { display: block; }
+.chartcell .calt { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+.flags { display: flex; gap: 6px; flex-wrap: wrap; }
+.flagbtn {
+  border: 1px solid var(--line-strong); border-radius: 6px; padding: 3px;
+  background: var(--surface); cursor: pointer; line-height: 0;
+  transition: transform .1s, border-color .15s;
+}
+.flagbtn svg { display: block; border-radius: 3px; }
+.flagbtn:hover { transform: translateY(-1px); }
+.flagbtn[aria-pressed="true"] { border-color: var(--brass); box-shadow: 0 0 0 2px var(--brass); }
+select#instrSel {
+  font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line-strong); border-radius: 8px; padding: 7px 10px;
+  max-width: 280px;
+}
+footer.foot {
+  margin-top: 34px; padding-top: 14px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 6px 24px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="top">
+  <div>
+    <h1><span class="clefmark">&#9835;</span> Notesirkelen</h1>
+    <p class="sub" data-t="ui.subtitle"></p>
+  </div>
+  <div class="top-controls">
+    <div>
+      <span class="seg-label" data-t="ui.language">Språk</span>
+      <div class="flags" id="flagRow" role="group"></div>
+    </div>
+    <div>
+      <span class="seg-label" data-t="ui.instrument">Instrument</span>
+      <select id="instrSel"></select>
+    </div>
+    <div id="viewWrap">
+      <span class="seg-label" data-t="ui.view">Visning</span>
+      <div class="seg brassy" id="segView" role="group">
+        <button type="button" data-v="concert" aria-pressed="true"></button>
+        <button type="button" data-v="written" aria-pressed="false"></button>
+      </div>
+    </div>
+    <div id="namingWrap">
+      <span class="seg-label" data-t="ui.naming">Notenavn</span>
+      <div class="seg" id="segNaming" role="group">
+        <button type="button" data-n="native" aria-pressed="true"></button>
+        <button type="button" data-n="intl" aria-pressed="false"></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="col">
+    <div class="card card-circle">
+      <h2 data-t="ui.circleTitle"></h2>
+      <p class="hint" data-t="ui.circleHint"></p>
+      <svg id="circleSvg" viewBox="0 0 560 560" role="img" aria-label="Kvintsirkelen"></svg>
+      <div class="circle-foot">
+        <div class="legend">
+          <span><span class="dot dur"></span><span data-t="ui.dur"></span></span>
+          <span><span class="dot moll"></span><span data-t="ui.moll"></span></span>
+        </div>
+        <button type="button" class="ghost" id="enhBtn" data-t="ui.enhSwap"></button>
+      </div>
+    </div>
+    <div class="card" id="keyInfo"></div>
+  </section>
+
+  <section class="col">
+    <div class="card controls">
+      <label class="ctl">
+        <span class="seg-label" data-t="ui.scale"></span>
+        <select id="scaleSel"></select>
+      </label>
+      <div class="ctl">
+        <span class="seg-label" data-t="ui.range"></span>
+        <div class="seg" id="segOct">
+          <button type="button" data-o="1" aria-pressed="true" data-t="ui.oct1"></button>
+          <button type="button" data-o="2" aria-pressed="false" data-t="ui.oct2"></button>
+        </div>
+      </div>
+      <div class="ctl">
+        <span class="seg-label" data-t="ui.direction"></span>
+        <div class="seg" id="segDir">
+          <button type="button" data-d="up" aria-pressed="true" data-t="ui.dirUp"></button>
+          <button type="button" data-d="updown" aria-pressed="false" data-t="ui.dirUpDown"></button>
+        </div>
+      </div>
+      <label class="ctl">
+        <span class="seg-label" data-t="ui.tempo"></span>
+        <input type="range" id="tempo" min="40" max="208" value="96" step="4">
+        <span class="tempoval" id="tempoVal"></span>
+      </label>
+      <button type="button" class="play" id="playBtn"><span class="tri">&#9654;</span> <span id="playLabel"></span></button>
+      <label class="chk" id="soundingWrap"><input type="checkbox" id="soundingChk" checked> <span id="soundingLabel"></span></label>
+    </div>
+
+    <div class="card staffcard">
+      <h2 id="staffTitle"></h2>
+      <p class="hint" id="staffHint"></p>
+      <div class="staff-wrap"><svg id="staffSvg"></svg></div>
+      <p class="pattern-line" id="patternLine"></p>
+    </div>
+
+    <div class="card">
+      <h2 data-t="ui.keyboard"></h2>
+      <p class="hint" id="kbdHint"></p>
+      <svg id="kbdSvg" viewBox="0 0 700 130" role="img" aria-label="Klaviatur med skalatoner"></svg>
+    </div>
+  </section>
+</main>
+
+<section class="card" style="margin-top:20px">
+  <h2 data-t="ui.levelsTitle"></h2>
+  <p class="hint" data-t="ui.levelsHint"></p>
+  <div class="levels" id="levels"></div>
+</section>
+
+<section class="theory">
+  <h2 class="sect serif" data-t="ui.theoryTitle"></h2>
+  <div id="theoryBoxes"></div>
+</section>
+
+<footer class="foot">
+  <span id="footerRule"></span>
+  <span data-t="ui.footerTuning"></span>
+</footer>
+</div>
+
+<script>
+'use strict';
+const LETTERS = ['C','D','E','F','G','A','B'];
+const LETTER_SEMIS = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
+const LETTER_FIFTHS = { C:0, D:2, E:4, F:-1, G:1, A:3, B:5 };
+const SHARP_ORDER = ['F','C','G','D','A','E','B'];
+const FLAT_ORDER  = ['B','E','A','D','G','C','F'];
+// Faste fortegn i G-nøkkel: diatonisk posisjon (oktav*7 + bokstavindeks)
+const SHARP_SIG_DI = [38, 35, 39, 36, 33, 37, 34]; // F5 C5 G5 D5 A4 E5 B4
+const FLAT_SIG_DI  = [34, 37, 33, 36, 32, 35, 31]; // B4 E5 A4 D5 G4 C5 F4
+
+function noteMidi(n) { return 12 * (n.octave + 1) + LETTER_SEMIS[n.letter] + n.alt; }
+function diaIndex(n) { return n.octave * 7 + LETTERS.indexOf(n.letter); }
+function fifthsOf(t) { return LETTER_FIFTHS[t.letter] + 7 * t.alt; }
+function pcOf(t) { return ((LETTER_SEMIS[t.letter] + t.alt) % 12 + 12) % 12; }
+
+// Tonika fra kvintindeks: ...-7=Cess, 0=C, 7=Ciss
+function tonicFromFifths(f) {
+  const idx = (((f + 1) % 7) + 7) % 7;
+  return { letter: 'FCGDAEB'[idx], alt: Math.floor((f + 1) / 7) };
+}
+// Faste fortegn for kvintindeks f: {bokstav: alterasjon}
+function sigMap(f) {
+  const m = { C:0, D:0, E:0, F:0, G:0, A:0, B:0 };
+  if (f > 0) for (let i = 0; i < f; i++) m[SHARP_ORDER[i]] = 1;
+  if (f < 0) for (let i = 0; i < -f; i++) m[FLAT_ORDER[i]] = -1;
+  return m;
+}
+function sigList(f) {
+  const out = [];
+  if (f > 0) for (let i = 0; i < Math.min(f, 7); i++) out.push({ letter: SHARP_ORDER[i], alt: 1, di: SHARP_SIG_DI[i] });
+  if (f < 0) for (let i = 0; i < Math.min(-f, 7); i++) out.push({ letter: FLAT_ORDER[i], alt: -1, di: FLAT_SIG_DI[i] });
+  return out;
+}
+// Respell tonika om tonearten havner utenfor de 15 standardsignaturene.
+// quality: 'dur' eller 'moll' — moll-signaturen ligger 3 kvinter under tonika.
+function normalizeTonic(out, quality) {
+  const off = quality === 'moll' ? 3 : 0;
+  const sig = fifthsOf(out) - off;
+  if (sig > 7) return tonicFromFifths(fifthsOf(out) - 12);
+  if (sig < -7) return tonicFromFifths(fifthsOf(out) + 12);
+  return out;
+}
+// Transponer en stavemåte opp en stor sekund (klingende -> skrevet for B♭)
+function upMajorSecond(t, quality) {
+  const i = LETTERS.indexOf(t.letter);
+  const nl = LETTERS[(i + 1) % 7];
+  const carry = (i + 1 > 6) ? 12 : 0;
+  const out = { letter: nl, alt: LETTER_SEMIS[t.letter] + t.alt + 2 - (LETTER_SEMIS[nl] + carry) };
+  return normalizeTonic(out, quality || 'dur');
+}
+
+/* ---------------- Kvintsirkelen ---------------- */
+// 12 posisjoner med klokka fra C. maj/min: liste av stavemåter (enharmoniske varianter)
+const CIRCLE = [
+  { maj: [{letter:'C',alt:0}],                    min: [{letter:'A',alt:0}] },
+  { maj: [{letter:'G',alt:0}],                    min: [{letter:'E',alt:0}] },
+  { maj: [{letter:'D',alt:0}],                    min: [{letter:'B',alt:0}] },
+  { maj: [{letter:'A',alt:0}],                    min: [{letter:'F',alt:1}] },
+  { maj: [{letter:'E',alt:0}],                    min: [{letter:'C',alt:1}] },
+  { maj: [{letter:'B',alt:0},{letter:'C',alt:-1}], min: [{letter:'G',alt:1},{letter:'A',alt:-1}] },
+  { maj: [{letter:'F',alt:1},{letter:'G',alt:-1}], min: [{letter:'D',alt:1},{letter:'E',alt:-1}] },
+  { maj: [{letter:'D',alt:-1},{letter:'C',alt:1}], min: [{letter:'B',alt:-1},{letter:'A',alt:1}] },
+  { maj: [{letter:'A',alt:-1}],                   min: [{letter:'F',alt:0}] },
+  { maj: [{letter:'E',alt:-1}],                   min: [{letter:'C',alt:0}] },
+  { maj: [{letter:'B',alt:-1}],                   min: [{letter:'G',alt:0}] },
+  { maj: [{letter:'F',alt:0}],                    min: [{letter:'D',alt:0}] },
+];
+function findSlot(pc, ring) {
+  for (let s = 0; s < 12; s++) {
+    const arr = CIRCLE[s][ring];
+    for (let e = 0; e < arr.length; e++) if (pcOf(arr[e]) === pc) return { slot: s, enh: e };
+  }
+  return null;
+}
+
+/* ---------------- Notenavn ---------------- */
+function norName(letter, alt) {
+  if (letter === 'B') {
+    if (alt === 0) return 'H';
+    if (alt === 1) return 'Hiss';
+    if (alt === 2) return 'Hississ';
+    if (alt === -1) return 'B';
+    return 'Bess'; // H♭♭ (sjelden)
+  }
+  if (alt === 0) return letter;
+  if (alt > 0) return letter + 'iss'.repeat(alt);
+  let s = letter;
+  for (let i = 0; i < -alt; i++) s += (i === 0 && (letter === 'E' || letter === 'A')) ? 'ss' : 'ess';
+  return s;
+}
+function accSymbol(alt) {
+  if (alt === 1) return '♯';
+  if (alt === -1) return '♭';
+  if (alt === 2) return '×';        // dobbeltkryss (×)
+  if (alt === -2) return '♭♭'; // dobbelt-b
+  return '';
+}
+function intlName(letter, alt) { return letter + accSymbol(alt); }
+function dispNote(t, naming) { return naming === 'nor' ? norName(t.letter, t.alt) : intlName(t.letter, t.alt); }
+// Tonikanavn i skalaoverskrifter: moll-baserte skalaer får liten forbokstav på norsk
+function scaleTonicName(t, scaleId, naming) {
+  const n = dispNote(t, naming);
+  return (naming === 'nor' && SCALES[scaleId].ring === 'min') ? n.charAt(0).toLowerCase() + n.slice(1) : n;
+}
+function keyLabel(t, quality, naming) {
+  const n = dispNote(t, naming);
+  if (quality === 'dur') return n + '-dur';
+  return (naming === 'nor' ? n.toLowerCase() : n) + '-moll';
+}
+function fortegnText(f) {
+  if (f === 0) return 'ingen faste fortegn';
+  const n = Math.abs(f);
+  if (f > 0) return n + (n === 1 ? ' kryss' : ' kryss');
+  return n + (n === 1 ? ' b' : ' b-er');
+}
+
+/* ---------------- Skalaer ---------------- */
+// sig: 'major' = tonika som dur | 'minor' = parallell dur (moll-fortegn) |
+//      offsetF (tall) = tonikas kvintindeks minus offset | 'none' = løse fortegn
+const SCALES = {
+  dur:        { name: 'Dur (jonisk)',            lvl: 1, ring: 'maj', sigOff: 0,      semis: [0,2,4,5,7,9,11], lets: [0,1,2,3,4,5,6] },
+  nmoll:      { name: 'Naturlig moll (eolisk)',  lvl: 1, ring: 'min', sigOff: 3,      semis: [0,2,3,5,7,8,10], lets: [0,1,2,3,4,5,6] },
+  durpent:    { name: 'Durpentaton',             lvl: 1, ring: 'maj', sigOff: 0,      semis: [0,2,4,7,9],      lets: [0,1,2,4,5] },
+  hmoll:      { name: 'Harmonisk moll',          lvl: 2, ring: 'min', sigOff: 3,      semis: [0,2,3,5,7,8,11], lets: [0,1,2,3,4,5,6] },
+  mmoll:      { name: 'Melodisk moll (oppover)', lvl: 2, ring: 'min', sigOff: 3,      semis: [0,2,3,5,7,9,11], lets: [0,1,2,3,4,5,6] },
+  mollpent:   { name: 'Mollpentaton',            lvl: 2, ring: 'min', sigOff: 3,      semis: [0,3,5,7,10],     lets: [0,2,3,4,6] },
+  blues:      { name: 'Blues',                   lvl: 2, ring: 'min', sigOff: 3,      semis: [0,3,5,6,7,10],   lets: [0,2,3,4,4,6] },
+  krom:       { name: 'Kromatisk',               lvl: 2, ring: 'maj', sigOff: 'none', semis: null, lets: null },
+  dorisk:     { name: 'Dorisk',                  lvl: 3, ring: 'min', sigOff: 2,      semis: [0,2,3,5,7,9,10], lets: [0,1,2,3,4,5,6] },
+  frygisk:    { name: 'Frygisk',                 lvl: 3, ring: 'min', sigOff: 4,      semis: [0,1,3,5,7,8,10], lets: [0,1,2,3,4,5,6] },
+  lydisk:     { name: 'Lydisk',                  lvl: 3, ring: 'maj', sigOff: -1,     semis: [0,2,4,6,7,9,11], lets: [0,1,2,3,4,5,6] },
+  mikso:      { name: 'Miksolydisk',             lvl: 3, ring: 'maj', sigOff: 1,      semis: [0,2,4,5,7,9,10], lets: [0,1,2,3,4,5,6] },
+  lokrisk:    { name: 'Lokrisk',                 lvl: 3, ring: 'min', sigOff: 5,      semis: [0,1,3,5,6,8,10], lets: [0,1,2,3,4,5,6] },
+  heltone:    { name: 'Heltoneskala',            lvl: 4, ring: 'maj', sigOff: 'none', semis: [0,2,4,6,8,10],   lets: [0,1,2,3,4,5] },
+  dimhh:      { name: 'Dim (hel–halv)',     lvl: 4, ring: 'min', sigOff: 'none', semis: [0,2,3,5,6,8,9,11], lets: [0,1,2,3,4,5,5,6] },
+  dimhalv:    { name: 'Dim (halv–hel)',     lvl: 4, ring: 'maj', sigOff: 'none', semis: [0,1,3,4,6,7,9,10], lets: [0,1,2,2,3,4,5,6] },
+  alterert:   { name: 'Alterert (superlokrisk)', lvl: 4, ring: 'maj', sigOff: 'none', semis: [0,1,3,4,6,8,10], lets: [0,1,2,3,4,5,6] },
+  lyddom:     { name: 'Lydisk dominant',         lvl: 4, ring: 'maj', sigOff: 'none', semis: [0,2,4,6,7,9,10], lets: [0,1,2,3,4,5,6] },
+  frygdom:    { name: 'Frygisk dominant',        lvl: 4, ring: 'maj', sigOff: 'none', semis: [0,1,4,5,7,8,10], lets: [0,1,2,3,4,5,6] },
+  bebopdom:   { name: 'Bebop-dominant',          lvl: 4, ring: 'maj', sigOff: 'none', semis: [0,2,4,5,7,9,10,11], lets: [0,1,2,3,4,5,6,6] },
+  bebopdur:   { name: 'Bebop-dur',               lvl: 4, ring: 'maj', sigOff: 'none', semis: [0,2,4,5,7,8,9,11], lets: [0,1,2,3,4,5,5,6] },
+  arpdur:     { name: 'Dur-treklang',            lvl: 3, ring: 'maj', sigOff: 0,      semis: [0,4,7],    lets: [0,2,4], arp: true },
+  arpmoll:    { name: 'Moll-treklang',           lvl: 3, ring: 'min', sigOff: 3,      semis: [0,3,7],    lets: [0,2,4], arp: true },
+  arpdom7:    { name: 'Dominantseptim',          lvl: 3, ring: 'maj', sigOff: 1,      semis: [0,4,7,10], lets: [0,2,4,6], arp: true },
+  arpmaj7:    { name: 'Maj7',                    lvl: 4, ring: 'maj', sigOff: 0,      semis: [0,4,7,11], lets: [0,2,4,6], arp: true },
+  arpm7:      { name: 'Moll7',                   lvl: 4, ring: 'min', sigOff: 3,      semis: [0,3,7,10], lets: [0,2,4,6], arp: true },
+  arpdim7:    { name: 'Dim7',                    lvl: 4, ring: 'min', sigOff: 'none', semis: [0,3,6,9],  lets: [0,2,4,6], arp: true },
+};
+const SCALE_GROUPS = [
+  { key: 'g1', ids: ['dur','nmoll','durpent'] },
+  { key: 'g2', ids: ['hmoll','mmoll','mollpent','blues','krom'] },
+  { key: 'g3', ids: ['dorisk','frygisk','lydisk','mikso','lokrisk'] },
+  { key: 'g4', ids: ['arpdur','arpmoll','arpdom7','arpmaj7','arpm7','arpdim7'] },
+  { key: 'g5', ids: ['heltone','dimhh','dimhalv','alterert','lyddom','frygdom','bebopdom','bebopdur'] },
+];
+
+// Kromatisk staving uten dobbeltfortegn
+const SHARP_SPELL = [['C',0],['C',1],['D',0],['D',1],['E',0],['F',0],['F',1],['G',0],['G',1],['A',0],['A',1],['B',0]];
+const FLAT_SPELL  = [['C',0],['D',-1],['D',0],['E',-1],['E',0],['F',0],['G',-1],['G',0],['A',-1],['A',0],['B',-1],['B',0]];
+function spellPitch(midi, useFlats) {
+  const pc = ((midi % 12) + 12) % 12;
+  const [letter, alt] = (useFlats ? FLAT_SPELL : SHARP_SPELL)[pc];
+  return { letter, alt, octave: Math.floor(midi / 12) - 1 };
+}
+
+// Bygg skalaen fra en tonika-stavemåte. Returnerer {notes, sigF, degrees}
+function buildScale(tonic, typeId, rootMidi, octaves) {
+  const def = SCALES[typeId];
+  // Faste fortegn
+  let sigF;
+  if (def.sigOff === 'none') sigF = 0;
+  else {
+    sigF = fifthsOf(tonic) - def.sigOff;
+    if (sigF > 7 || sigF < -7) sigF = 0; // utenfor standard -> løse fortegn i stedet
+  }
+  const notes = [];
+  const degrees = [];
+  if (typeId === 'krom') {
+    const useFlats = fifthsOf(tonic) < 0;
+    const span = 12 * octaves;
+    for (let i = 0; i <= span; i++) {
+      notes.push(spellPitch(rootMidi + i, useFlats));
+      degrees.push(i % 12 === 0 ? '1' : '');
+    }
+    return { notes, sigF: 0, degrees };
+  }
+  const Li = LETTERS.indexOf(tonic.letter);
+  const baseOct = Math.round((rootMidi - LETTER_SEMIS[tonic.letter] - tonic.alt) / 12) - 1;
+  const MAJ = [0, 2, 4, 5, 7, 9, 11];
+  const oneOct = def.semis.map((s, i) => ({ s, lo: def.lets[i] }));
+  const seq = [];
+  for (let o = 0; o < octaves; o++) oneOct.forEach(x => seq.push({ s: x.s + 12 * o, lo: x.lo + 7 * o }));
+  seq.push({ s: 12 * octaves, lo: 7 * octaves }); // toppen: tonika
+  for (const { s, lo } of seq) {
+    const letter = LETTERS[(Li + lo) % 7];
+    const octave = baseOct + Math.floor((Li + lo) / 7);
+    const target = rootMidi + s;
+    notes.push({ letter, alt: target - (12 * (octave + 1) + LETTER_SEMIS[letter]), octave });
+    const dNum = (lo % 7) + 1;
+    const diff = ((s % 12) - MAJ[lo % 7] + 24) % 12;
+    const dAcc = diff === 0 ? '' : diff === 11 ? '♭' : diff === 1 ? '♯' : diff === 10 ? '♭♭' : '';
+    degrees.push((s % 12 === 0 && dNum === 1) ? '1' : dAcc + dNum);
+  }
+  return { notes, sigF, degrees };
+}
+
+// Velg rot-oktav slik at alt ligger godt på G-nøkkelsystemet og innenfor trompetregisteret
+function chooseRootMidi(tonic, view, octaves) {
+  const pc = pcOf(tonic);
+  let lo;
+  if (octaves === 2) lo = (view === 'written') ? 54 : 52;
+  else lo = 57;
+  let m = lo + ((pc - lo) % 12 + 12) % 12;
+  return m;
+}
+
+/* ---------------- Grep for B♭-trompet (skrevet tonehøyde) ---------------- */
+// f = hovedgrep, a = vanlige alternativgrep, i = intonasjonsmerknad
+const FINGERINGS = {
+  54: { f: '123', i: 'i123' },
+  55: { f: '13',  i: 'i13' },
+  56: { f: '23' },
+  57: { f: '12', a: ['3'] },
+  58: { f: '1' },
+  59: { f: '2' },
+  60: { f: '0' },
+  61: { f: '123', i: 'i123' },
+  62: { f: '13',  i: 'i13' },
+  63: { f: '23' },
+  64: { f: '12', a: ['3'] },
+  65: { f: '1' },
+  66: { f: '2' },
+  67: { f: '0' },
+  68: { f: '23' },
+  69: { f: '12', a: ['3'] },
+  70: { f: '1' },
+  71: { f: '2' },
+  72: { f: '0' },
+  73: { f: '12', a: ['3', '123'] },
+  74: { f: '1',  a: ['13'] },
+  75: { f: '2',  a: ['23'] },
+  76: { f: '0',  a: ['12'], i: 'i5th' },
+  77: { f: '1' },
+  78: { f: '2' },
+  79: { f: '0',  a: ['13'] },
+  80: { f: '23' },
+  81: { f: '12', a: ['3'] },
+  82: { f: '1' },
+  83: { f: '2' },
+  84: { f: '0' },
+  85: { f: '12', i: 'ihigh12' },
+  86: { f: '1',  i: 'ihigh' },
+  87: { f: '2',  i: 'ihigh' },
+  88: { f: '0',  i: 'ihigh' },
+  89: { f: '1',  i: 'ihigh' },
+  90: { f: '2',  i: 'ihigh' },
+  91: { f: '0',  i: 'ihigh' },
+};
+const FING_MIN = 54, FING_MAX = 91;
+function fingeringFor(writtenMidi) { return FINGERINGS[writtenMidi] || null; }
+
+/* ---------------- Generell transponering ---------------- */
+// written = concert + (letters, semis). quality styrer respelling-grensen.
+function transposeBy(t, letters, semis, quality) {
+  if (!letters && !semis) return { letter: t.letter, alt: t.alt };
+  const i = LETTERS.indexOf(t.letter);
+  const li = i + letters;
+  const nl = LETTERS[((li % 7) + 7) % 7];
+  const octShift = Math.floor(li / 7);
+  const base = LETTER_SEMIS[t.letter] + t.alt;
+  const naturalRel = LETTER_SEMIS[nl] + 12 * octShift;
+  return normalizeTonic({ letter: nl, alt: base + semis - naturalRel }, quality || 'dur');
+}
+// Intervallnavn-komponenter fra (letters, semis), absoluttverdier
+function intervalParts(letters, semis) {
+  const L = Math.abs(letters), S = Math.abs(semis);
+  const octs = Math.floor(L / 7);
+  const rem = L % 7, remS = S - 12 * octs;
+  const PERF = { 0: 0, 3: 5, 4: 7 };
+  let qual = 'maj';
+  if (rem in PERF) qual = 'perf';
+  else { const MAJ = { 1: 2, 2: 4, 5: 9, 6: 11 }; qual = (remS === MAJ[rem]) ? 'maj' : 'min'; }
+  return { octs, num: rem, qual };
+}
+
+/* ---------------- Nøkler (clefs) ---------------- */
+const CLEFS = {
+  treble: { bottomDi: 30, sigShift: 0,  anchorLine: 1, centerMidi: 71 }, // G4-linja, midt = H4
+  alto:   { bottomDi: 24, sigShift: 7,  anchorLine: 2, centerMidi: 60 }, // C4-linja
+  bass:   { bottomDi: 18, sigShift: 14, anchorLine: 3, centerMidi: 50 }, // F3-linja, midt = D3
+};
+
+/* ---------------- Instrumenter ----------------
+   interval: skrevet = klingende + (letters, semis). fing: 'brass3' = trompetgrepstabellen gjelder.
+   range: skrevet register [lav, høy] i midi. */
+const INSTRUMENTS = [
+  { id: 'violin',      group: 'strings',  clef: 'treble', letters: 0,   semis: 0,   fing: null,     lo: 55, hi: 91 },
+  { id: 'viola',       group: 'strings',  clef: 'alto',   letters: 0,   semis: 0,   fing: null,     lo: 48, hi: 81 },
+  { id: 'cello',       group: 'strings',  clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 36, hi: 67 },
+  { id: 'dbass',       group: 'strings',  clef: 'bass',   letters: 7,   semis: 12,  fing: null,     lo: 40, hi: 67 },
+  { id: 'piccolo',     group: 'woodwind', clef: 'treble', letters: -7,  semis: -12, fing: null,     lo: 62, hi: 93 },
+  { id: 'flute',       group: 'woodwind', clef: 'treble', letters: 0,   semis: 0,   fing: null,     lo: 60, hi: 93 },
+  { id: 'altflute',    group: 'woodwind', clef: 'treble', letters: 3,   semis: 5,   fing: null,     lo: 60, hi: 89 },
+  { id: 'oboe',        group: 'woodwind', clef: 'treble', letters: 0,   semis: 0,   fing: null,     lo: 58, hi: 86 },
+  { id: 'englhorn',    group: 'woodwind', clef: 'treble', letters: 4,   semis: 7,   fing: null,     lo: 59, hi: 86 },
+  { id: 'klar_bb',     group: 'woodwind', clef: 'treble', letters: 1,   semis: 2,   fing: null,     lo: 52, hi: 91 },
+  { id: 'klar_a',      group: 'woodwind', clef: 'treble', letters: 2,   semis: 3,   fing: null,     lo: 52, hi: 91 },
+  { id: 'klar_eb',     group: 'woodwind', clef: 'treble', letters: -2,  semis: -3,  fing: null,     lo: 52, hi: 88 },
+  { id: 'bassklar',    group: 'woodwind', clef: 'treble', letters: 8,   semis: 14,  fing: null,     lo: 50, hi: 84 },
+  { id: 'fagott',      group: 'woodwind', clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 34, hi: 64 },
+  { id: 'kontrafag',   group: 'woodwind', clef: 'bass',   letters: 7,   semis: 12,  fing: null,     lo: 34, hi: 60 },
+  { id: 'sopransax',   group: 'woodwind', clef: 'treble', letters: 1,   semis: 2,   fing: null,     lo: 58, hi: 88 },
+  { id: 'altsax',      group: 'woodwind', clef: 'treble', letters: 5,   semis: 9,   fing: null,     lo: 58, hi: 88 },
+  { id: 'tenorsax',    group: 'woodwind', clef: 'treble', letters: 8,   semis: 14,  fing: null,     lo: 58, hi: 88 },
+  { id: 'barisax',     group: 'woodwind', clef: 'treble', letters: 12,  semis: 21,  fing: null,     lo: 57, hi: 88 },
+  { id: 'tromp_bb',    group: 'brass',    clef: 'treble', letters: 1,   semis: 2,   fing: 'brass3', lo: 54, hi: 91 },
+  { id: 'tromp_c',     group: 'brass',    clef: 'treble', letters: 0,   semis: 0,   fing: 'brass3', lo: 54, hi: 91 },
+  { id: 'tromp_d',     group: 'brass',    clef: 'treble', letters: -1,  semis: -2,  fing: 'brass3', lo: 54, hi: 89 },
+  { id: 'tromp_eb',    group: 'brass',    clef: 'treble', letters: -2,  semis: -3,  fing: 'brass3', lo: 54, hi: 89 },
+  { id: 'picctromp',   group: 'brass',    clef: 'treble', letters: -6,  semis: -10, fing: 'brass3', lo: 54, hi: 86, fourValve: true },
+  { id: 'kornett_bb',  group: 'brass',    clef: 'treble', letters: 1,   semis: 2,   fing: 'brass3', lo: 54, hi: 89 },
+  { id: 'kornett_eb',  group: 'brass',    clef: 'treble', letters: -2,  semis: -3,  fing: 'brass3', lo: 54, hi: 88 },
+  { id: 'flygelhorn',  group: 'brass',    clef: 'treble', letters: 1,   semis: 2,   fing: 'brass3', lo: 54, hi: 86 },
+  { id: 'basstromp',   group: 'brass',    clef: 'treble', letters: 8,   semis: 14,  fing: 'brass3', lo: 54, hi: 84 },
+  { id: 'horn_f',      group: 'brass',    clef: 'treble', letters: 4,   semis: 7,   fing: null,     lo: 46, hi: 81 },
+  { id: 'althorn',     group: 'brass',    clef: 'treble', letters: 5,   semis: 9,   fing: 'brass3', lo: 54, hi: 84 },
+  { id: 'trombone',    group: 'brass',    clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 40, hi: 70 },
+  { id: 'basstrombone',group: 'brass',    clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 34, hi: 67 },
+  { id: 'eufonium_c',  group: 'brass',    clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 34, hi: 70 },
+  { id: 'eufonium_bb', group: 'brass',    clef: 'treble', letters: 8,   semis: 14,  fing: 'brass3', lo: 54, hi: 84 },
+  { id: 'tuba',        group: 'brass',    clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 28, hi: 58 },
+  { id: 'tuba_eb',     group: 'brass',    clef: 'treble', letters: 12,  semis: 21,  fing: 'brass3', lo: 54, hi: 82 },
+  { id: 'tuba_bb',     group: 'brass',    clef: 'treble', letters: 15,  semis: 26,  fing: 'brass3', lo: 54, hi: 80 },
+  { id: 'piano',       group: 'other',    clef: 'treble', letters: 0,   semis: 0,   fing: null,     lo: 48, hi: 88 },
+  { id: 'klokkespill', group: 'other',    clef: 'treble', letters: -14, semis: -24, fing: null,     lo: 65, hi: 89 },
+  { id: 'xylofon',     group: 'other',    clef: 'treble', letters: -7,  semis: -12, fing: null,     lo: 60, hi: 89 },
+  { id: 'pauker',      group: 'other',    clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 40, hi: 55 },
+];
+const INSTR_BY_ID = {};
+INSTRUMENTS.forEach(x => { INSTR_BY_ID[x.id] = x; });
+const INSTR_GROUP_ORDER = ['brass', 'woodwind', 'strings', 'other'];
+
+/* ================================================================
+   Språk og notenavn
+   ================================================================ */
+const I18N = {"no":{"meta":{"lang":"no","name":"Norsk"},"ui":{"title":"Notesirkelen","subtitle":"Tonearter, skalaer, transponering og grep for hele orkesteret. Velg språk og instrument, klikk i kvintsirkelen — og se noter, fortegn og grep fra nybegynner- til proffnivå.","language":"Språk","instrument":"Instrument","view":"Visning","viewConcert":"Klingende (C)","viewWritten":"Skrevet for {instr}","naming":"Notenavn","namingNative":"Norsk (H · B · Fiss)","namingIntl":"Internasjonal (B · B♭ · F♯)","scale":"Skala","range":"Omfang","oct1":"1 oktav","oct2":"2 oktaver","direction":"Retning","dirUp":"Opp","dirUpDown":"Opp og ned","tempo":"Tempo","bpm":"slag/min","play":"Spill skalaen","stop":"Stopp","playSounding":"Spill klingende (som {instr})","circleTitle":"Kvintsirkelen","circleHint":"Ytre ring: dur. Indre ring: moll. Med klokka = kvint opp (+1 kryss), mot klokka = kvint ned (+1 b).","dur":"Dur","moll":"Moll","enhSwap":"Enharmonisk bytte","hubOn":"på {instr}: {key}","hubSounds":"klingende: {key}","looseAccs":"(løse fortegn)","writtenKeyFor":"Skrevet toneart for {instr}","concertKey":"Klingende toneart (konsert)","factSig":"Faste fortegn","factRel":"Parallelltoneart (felles fortegn)","factVar":"Varianttoneart (felles grunntone)","factDom":"Dominant (D)","factSub":"Subdominant (S)","factEnh":"Enharmonisk lik","noSig":"ingen faste fortegn","sharpOne":"kryss","sharpMany":"kryss","flatOne":"b","flatMany":"b-er","soundsAs":"Klinger som <b>{key}</b> ({interval} {dir}).","writtenAs":"På {instr} skrives dette som <b>{key}</b> ({interval} {dir}).","nonTransposing":"{instr} er ikke-transponerende: skrevet og klingende tonehøyde er den samme.","staffHintWritten":"Grepene gjelder de skrevne notene. Klikk en note for å høre den.","staffHintConcert":"Notene er klingende; grepene viser hva {instr} bruker. Klikk en note for å høre den.","staffHintNoFing":"Klikk en note for å høre den.","stepsLabel":"Trinn","stepsLegend":"1 = heltonetrinn, ½ = halvtonetrinn","chromSteps":"bare halvtonetrinn (½ × 12 per oktav)","keyboard":"Klaviatur","kbdWritten":"Skalaens skrevne toner — klingende {interval} lavere.","kbdWrittenUp":"Skalaens skrevne toner — klingende {interval} høyere.","kbdConcert":"Skalaens klingende toner.","kbdRoot":"Grunntonen er fylt.","levelsTitle":"Fra nybegynner til proff","levelsHint":"Vanlig progresjon for skalaer. Klikk et nivå for anbefalinger, og klikk en toneart for å hente den opp.","theoryTitle":"Teori og oppslag","harm":"(harm.)","mel":"(mel.)","openValve":"åpent","fingering":"grep","alt":"alt","outOfRange":"utenfor vanlig register","forWritten":"for skrevet {note}","octaveWord":"oktav","written":"skrevet","sounding":"klingende","footerTuning":"Stemming: A4 = 440 Hz, likesvevende temperatur.","octaves":"oktav|oktaver","and":"og","fingClause":" Grepene under notene gjelder de skrevne tonene."},"intonation":{"i123":"Har lett for å bli høy — skyv ut 3.-ventilsleiden","i13":"Har lett for å bli høy — bruk 3.-ventilsleiden","i5th":"5. deltone — kan ligge lavt på åpent grep","ihigh":"Høyt register","ihigh12":"Høyt register — intonasjonen styres mest av leppene"},"intervals":{"qualities":{"perf":"ren","maj":"stor","min":"liten"},"numbers":["prim","sekund","ters","kvart","kvint","sekst","septim"],"octaveOne":"en oktav","octaveTwo":"to oktaver","pattern":"en {qual} {num}","octavePlus":"{oct} og en {qual} {num}"},"keys":{"majorPattern":"{note}-dur","minorPattern":"{note}-moll","minorLowercase":true},"scales":{"dur":"Dur (jonisk)","nmoll":"Naturlig moll (eolisk)","durpent":"Durpentaton","hmoll":"Harmonisk moll","mmoll":"Melodisk moll (oppover)","mollpent":"Mollpentaton","blues":"Blues","krom":"Kromatisk","dorisk":"Dorisk","frygisk":"Frygisk","lydisk":"Lydisk","mikso":"Miksolydisk","lokrisk":"Lokrisk","heltone":"Heltoneskala","dimhh":"Dim (hel–halv)","dimhalv":"Dim (halv–hel)","alterert":"Alterert (superlokrisk)","lyddom":"Lydisk dominant","frygdom":"Frygisk dominant","bebopdom":"Bebop-dominant","bebopdur":"Bebop-dur","arpdur":"Dur-treklang","arpmoll":"Moll-treklang","arpdom7":"Dominantseptim","arpmaj7":"Maj7","arpm7":"Moll7","arpdim7":"Dim7","arpSuffix":"(arpeggio)"},"scaleGroups":{"g1":"Nivå 1 · Grunnskalaer","g2":"Nivå 2 · Moll-varianter og blues","g3":"Nivå 3 · Kirketonearter (modi)","g4":"Nivå 3–4 · Arpeggioer","g5":"Nivå 4 · Jazz og symmetriske"},"instrumentGroups":{"strings":"Strykere","woodwind":"Treblås","brass":"Messing","other":"Tangent og slagverk"},"instruments":{"violin":"Fiolin","viola":"Bratsj","cello":"Cello","dbass":"Kontrabass","piccolo":"Pikkolofløyte","flute":"Fløyte","altflute":"Altfløyte i G","oboe":"Obo","englhorn":"Engelsk horn i F","klar_bb":"Klarinett i B♭","klar_a":"Klarinett i A","klar_eb":"Klarinett i E♭","bassklar":"Bassklarinett i B♭","fagott":"Fagott","kontrafag":"Kontrafagott","sopransax":"Sopransaksofon i B♭","altsax":"Altsaksofon i E♭","tenorsax":"Tenorsaksofon i B♭","barisax":"Barytonsaksofon i E♭","tromp_bb":"Trompet i B♭","tromp_c":"Trompet i C","tromp_d":"Trompet i D","tromp_eb":"Trompet i E♭","picctromp":"Piccolotrompet i B♭","kornett_bb":"Kornett i B♭","kornett_eb":"Sopran­kornett i E♭","flygelhorn":"Flygelhorn i B♭","basstromp":"Basstrompet i B♭","horn_f":"Valthorn i F","althorn":"Althorn i E♭","trombone":"Trombone","basstrombone":"Basstrombone","eufonium_c":"Eufonium (bassnøkkel)","eufonium_bb":"Eufonium/baryton i B♭ (G-nøkkel)","tuba":"Tuba (bassnøkkel)","tuba_eb":"Tuba i E♭ (G-nøkkel, brassband)","tuba_bb":"Tuba i B♭ (G-nøkkel, brassband)","piano":"Piano","klokkespill":"Klokkespill","xylofon":"Xylofon","pauker":"Pauker"},"levels":[{"name":"Nybegynner","sub":"kulturskole, 1.–2. år","body":"Dur i C, F og G (skrevet), a-moll mot slutten. Én oktav, rolig og jevnt (♩ ≈ 60–72). Klang før teknikk.","tips":["Lange toner først: 8+ slag per tone med rolig, jevn luftstrøm eller strøk.","Syng skalaen før du spiller den — hør tonen før du lager den.","Bruk speil og lytt: jevn klang på hver tone er viktigere enn tempo."],"brassTips":["Lange toner først: 8+ slag på g¹ og c¹ (lav C) med rolig, åpen luftstrøm.","Leppeslurer på åpne deltoner (c¹–g¹–c²) uten ventiler før skalaen.","Syng eller «buzz» skalaen på munnstykket før du spiller den."]},{"name":"Øvet","sub":"grad 3–5 / mellomnivå","body":"Dur til 3–4 fortegn (korpstoneartene), moll i harmonisk og melodisk form, kromatisk skala, dominantseptim. Åttedeler ♩ ≈ 80–100, både bundet og støtt.","tips":["Øv skalaen bundet først, så artikulert i samme tempo — alltid med metronom.","Øv også fra toppen og ned — nedturen avslører ujevnheter.","Planlegg pusten/strøket: siste tone like full som første."],"brassTips":["Daglige leppeslurer (Arban/Schlossberg) på alle ventilkombinasjoner.","Øv skalaen bundet først, så støtt i samme tempo — alltid med metronom.","Planlegg pusten: maks ett pust per oktavløp, og siste tone like full som første."]},{"name":"Viderekommen","sub":"musikklinje / grad 6–8","body":"Alle 12 dur- og molltonearter utenat, arpeggioer (dur, moll, dom7, dim7). To oktaver der registeret tillater. Sekstendeler ♩ ≈ 80–112, blandede artikulasjoner.","tips":["Øv skalaene også i tersmønstre og med rytmevariasjoner.","To oktaver kommer fra kontroll og avspenthet — ikke kraft.","Kirketoneartene: samme fortegn, nytt utgangspunkt — hør forskjellen."],"brassTips":["Øv skalaene også fra toppen og ned, og i tersmønstre.","To oktaver kommer fra luftstøtte og fleksibilitet — ikke munnstykkepress.","Kirketoneartene: samme fortegn, nytt utgangspunkt — hør forskjellen."]},{"name":"Profesjonell","sub":"konservatorium / daglig rutine","body":"Alle tonearter i alle modi, jazz- og symmetriske skalaer, mønsterstudier gjennom hele registeret — i alle artikulasjoner og dynamikker.","tips":["Rotér: én toneart per dag, gjennom alle modi og arpeggioer.","Øv i alle dynamikker — pianissimo avslører mest.","Transponér etuder: tenk klingende og skrevet samtidig."],"brassTips":["Clarke-studie nr. 2 gjennom alle tonearter — pianissimo og ubesværet.","Rotér: én toneart per dag, gjennom alle modi og arpeggioer.","Transponér etuder: tenk klingende og skrevet samtidig."]}],"theory":{"tKvintTitle":"Slik leser du kvintsirkelen","tKvint":"<p>Kvintsirkelen ordner alle tonearter etter hvor mange faste fortegn de har. Ett steg <b>med klokka</b> er en ren kvint opp — og ett kryss mer (eller én b mindre). Ett steg <b>mot klokka</b> er en kvint ned — én b mer.</p><p>Nabotonearter deler seks av sju toner og klinger derfor nært beslektet. Det er grunnen til at <b>dominanten (D)</b> — kvinten over — og <b>subdominanten (S)</b> — kvinten under — er de viktigste akkordfunksjonene ved siden av tonika.</p><p>Ytre og indre ring på samme plass deler faste fortegn: det er <b>parallelltonearter</b> (f.eks. {exMajor} og {exMinor}). Nederst i sirkelen møtes kryss- og b-siden i de <b>enharmoniske</b> toneartene: samme klingende toner, to skrivemåter.</p>","tFortegnTitle":"Fortegn: rekkefølge og alle tonearter","tFortegn":"<p>Kryssene kommer alltid i rekkefølgen <b>{sharpOrder}</b> (kvintvis opp). B-fortegnene kommer i motsatt rekkefølge: <b>{flatOrder}</b> (kvintvis ned).</p><p>To nyttige huskeregler: <b>siste kryss</b> ligger et halvtonetrinn under grunntonen i dur (ledetonen). <b>Nest siste b</b> <i>er</i> durtonearten.</p>","thSig":"Faste fortegn","thDur":"Dur","thMoll":"Moll","thAccs":"Fortegnene","tParallellTitle":"Parallelltoneart og varianttoneart","tParallell":"<p>I norsk (og tysk) teori betyr <b>parallelltoneart</b> dur- og molltonearten som deler faste fortegn, med grunntoner en liten ters fra hverandre: {exKey} ↔ {exRel}. (På engelsk heter dette «relative key» — pass på ved oversettelser!)</p><p><b>Varianttoneart</b> er dur og moll på <i>samme grunntone</i>, f.eks. {exVar1} og {exVar2} — samme tonika, men tre fortegns forskjell.</p><p>Moll finnes i tre former: <b>naturlig</b> (som parallell dur), <b>harmonisk</b> (hevet 7. trinn — gir ledetone og en karakteristisk forstørret sekund) og <b>melodisk</b> (hevet 6. og 7. trinn oppover; naturlig form nedover i klassisk tradisjon).</p>","tTranspTitle":"Transponering: {instr} og andre instrumenter","tTranspTransposing":"<p>{instr} er et <b>transponerende instrument</b>: en skrevet C klinger som {soundsNote} — {interval} {direction}. For å få en ønsket klingende tone skriver man derfor {interval} {oppositeDirection}.</p>","tTranspNon":"<p>{instr} er <b>ikke-transponerende</b>: skrevet note og klingende tone er den samme. Tabellen under viser likevel hvordan transponerende instrumenter forholder seg til klingende tonehøyde.</p>","tTranspTable":"<p>Samme prinsipp gjelder resten av orkesteret: <b>klarinett i B♭</b> (stor sekund opp), <b>valthorn i F</b> (ren kvint opp), <b>altsaksofon i E♭</b> (stor sekst opp), <b>kontrabass</b> (en oktav opp). Tommelfingerregel: instrumentets navn er den klingende tonen når det spiller en skrevet C.</p>","thConcert":"Klingende (konsert)","thWritten":"Skrevet for {instr}","thWrittenSig":"Skrevne fortegn","lower":"lavere","higher":"høyere","up":"opp","down":"ned","tIntonasjonTitle":"Intonasjon på ventilmessing","tIntonasjon":"<p>Ventilene senker tonen med faste rørlengder, men kombinasjoner blir for korte — derfor er noen grep systematisk ustemte:</p><p><b>1·3 og 1·2·3 er høye.</b> Skrevet {noteD4} (1·3) og {noteCiss4} (1·2·3) er de beryktede: skyv ut 3.-ventilsleiden (ca. 1–1,5 cm for 1·3, 2–2,5 cm for 1·2·3).</p><p><b>5. deltone er lav.</b> Skrevet {noteE5} på åpent grep ligger ~14 cent lavt — juster med leppa, eller bruk 1·2 (6. deltone) som alternativgrep.</p><p><b>7. deltone unngås.</b> Åpen {noteB5} ligger ~31 cent lavt og brukes bare til jazz-effekter («shake») — spill den med 1. ventil.</p><p>3. ventil alene ≈ 1·2 og brukes som alternativgrep for triller og intonasjon ({alt3list}).</p>","tGrepTitle":"Full grepstabell (kromatisk, skrevet {low}–{high})","tGrep":"<p>Alle grep for {instr}, fra laveste tone ({low}) og opp i høyt register. Toner som inngår i valgt skala er uthevet. Hold pekeren over en celle for alternativgrep og intonasjonstips. Oktavtall etter internasjonal standard: C4 = enstrøken c.</p>","tGrepPiccoloNote":"<p>Merk: piccolotrompet har vanligvis en 4. ventil (senker en ren kvart) som utvider registeret nedover.</p>"},"footer":{"ruleTransposing":"{instr}: skrevet note klinger {interval} {direction}.","ruleNon":"{instr}: skrevet og klingende tonehøyde er den samme."}},"sv":{"meta":{"lang":"sv","name":"Svenska"},"ui":{"title":"Notcirkeln","subtitle":"Tonarter, skalor, transponering och grepp för hela orkestern. Välj språk och instrument, klicka i kvintcirkeln — och se noter, förtecken och grepp från nybörjar- till proffsnivå.","language":"Språk","instrument":"Instrument","view":"Visning","viewConcert":"Klingande (C)","viewWritten":"Noterat för {instr}","naming":"Notnamn","namingNative":"Svensk (H · B · Fiss)","namingIntl":"Internationell (B · B♭ · F♯)","scale":"Skala","range":"Omfång","oct1":"1 oktav","oct2":"2 oktaver","direction":"Riktning","dirUp":"Upp","dirUpDown":"Upp och ned","tempo":"Tempo","bpm":"slag/min","play":"Spela skalan","stop":"Stopp","playSounding":"Spela klingande (som {instr})","circleTitle":"Kvintcirkeln","circleHint":"Yttre ring: dur. Inre ring: moll. Medurs = en kvint upp (+1 kors), moturs = en kvint ned (+1 b).","dur":"Dur","moll":"Moll","enhSwap":"Enharmoniskt byte","hubOn":"på {instr}: {key}","hubSounds":"klingande: {key}","looseAccs":"(tillfälliga förtecken)","writtenKeyFor":"Noterad tonart för {instr}","concertKey":"Klingande tonart (konsert)","factSig":"Fasta förtecken","factRel":"Parallelltonart (gemensamma förtecken)","factVar":"Varianttonart (gemensam grundton)","factDom":"Dominant (D)","factSub":"Subdominant (S)","factEnh":"Enharmoniskt lika","noSig":"inga fasta förtecken","sharpOne":"kors","sharpMany":"kors","flatOne":"b","flatMany":"b:n","soundsAs":"Klingar som <b>{key}</b> ({interval} {dir}).","writtenAs":"På {instr} noteras detta som <b>{key}</b> ({interval} {dir}).","nonTransposing":"{instr} är icke-transponerande: noterad och klingande tonhöjd är densamma.","staffHintWritten":"Greppen gäller de noterade tonerna. Klicka på en not för att höra den.","staffHintConcert":"Noterna är klingande; greppen visar vad {instr} använder. Klicka på en not för att höra den.","staffHintNoFing":"Klicka på en not för att höra den.","stepsLabel":"Steg","stepsLegend":"1 = heltonsteg, ½ = halvtonsteg","chromSteps":"endast halvtonsteg (½ × 12 per oktav)","keyboard":"Klaviatur","kbdWritten":"Skalans noterade toner — klingande {interval} lägre.","kbdWrittenUp":"Skalans noterade toner — klingande {interval} högre.","kbdConcert":"Skalans klingande toner.","kbdRoot":"Grundtonen är ifylld.","levelsTitle":"Från nybörjare till proffs","levelsHint":"Vanlig progression för skalor. Klicka på en nivå för rekommendationer, och klicka på en tonart för att ta fram den.","theoryTitle":"Teori och fördjupning","harm":"(harm.)","mel":"(mel.)","openValve":"öppet","fingering":"grepp","alt":"alt","outOfRange":"utanför normalt register","forWritten":"för noterat {note}","octaveWord":"oktav","written":"noterat","sounding":"klingande","footerTuning":"Stämning: A4 = 440 Hz, liksvävande temperatur.","octaves":"oktav|oktaver","and":"och","fingClause":" Greppen under noterna gäller de noterade tonerna."},"intonation":{"i123":"Tenderar att bli hög — skjut ut tredje ventilbygeln","i13":"Tenderar att bli hög — använd tredje ventilbygeln","i5th":"5:e deltonen — kan ligga lågt med öppet grepp","ihigh":"Högt register","ihigh12":"Högt register — intonationen styrs mest av läpparna"},"intervals":{"qualities":{"perf":"ren","maj":"stor","min":"liten"},"numbers":["prim","sekund","ters","kvart","kvint","sext","septima"],"octaveOne":"en oktav","octaveTwo":"två oktaver","pattern":"en {qual} {num}","octavePlus":"{oct} och en {qual} {num}"},"keys":{"majorPattern":"{note}-dur","minorPattern":"{note}-moll","minorLowercase":true},"scales":{"dur":"Dur (jonisk)","nmoll":"Ren moll (eolisk)","durpent":"Durpentatonisk","hmoll":"Harmonisk moll","mmoll":"Melodisk moll (uppåtgående)","mollpent":"Mollpentatonisk","blues":"Blues","krom":"Kromatisk","dorisk":"Dorisk","frygisk":"Frygisk","lydisk":"Lydisk","mikso":"Mixolydisk","lokrisk":"Lokrisk","heltone":"Heltonsskala","dimhh":"Dim (hel–halv)","dimhalv":"Dim (halv–hel)","alterert":"Altererad (superlokrisk)","lyddom":"Lydisk dominant","frygdom":"Frygisk dominant","bebopdom":"Bebopdominant","bebopdur":"Bebopdur","arpdur":"Durtreklang","arpmoll":"Molltreklang","arpdom7":"Dominantseptima","arpmaj7":"Maj7","arpm7":"Moll7","arpdim7":"Dim7","arpSuffix":"(arpeggio)"},"scaleGroups":{"g1":"Nivå 1 · Grundskalor","g2":"Nivå 2 · Mollvarianter och blues","g3":"Nivå 3 · Kyrkotonarter (modi)","g4":"Nivå 3–4 · Arpeggion","g5":"Nivå 4 · Jazz och symmetriska"},"instrumentGroups":{"strings":"Stråkar","woodwind":"Träblås","brass":"Bleckblås","other":"Tangentinstrument och slagverk"},"instruments":{"violin":"Violin","viola":"Viola","cello":"Cello","dbass":"Kontrabas","piccolo":"Piccolaflöjt","flute":"Flöjt","altflute":"Altflöjt i G","oboe":"Oboe","englhorn":"Engelskt horn i F","klar_bb":"Klarinett i B♭","klar_a":"Klarinett i A","klar_eb":"Klarinett i E♭","bassklar":"Basklarinett i B♭","fagott":"Fagott","kontrafag":"Kontrafagott","sopransax":"Sopransaxofon i B♭","altsax":"Altsaxofon i E♭","tenorsax":"Tenorsaxofon i B♭","barisax":"Barytonsaxofon i E♭","tromp_bb":"Trumpet i B♭","tromp_c":"Trumpet i C","tromp_d":"Trumpet i D","tromp_eb":"Trumpet i E♭","picctromp":"Piccolatrumpet i B♭","kornett_bb":"Kornett i B♭","kornett_eb":"Soprankornett i E♭","flygelhorn":"Flygelhorn i B♭","basstromp":"Bastrumpet i B♭","horn_f":"Valthorn i F","althorn":"Althorn i E♭","trombone":"Trombon","basstrombone":"Bastrombon","eufonium_c":"Eufonium (basklav)","eufonium_bb":"Eufonium/baryton i B♭ (G-klav)","tuba":"Tuba (basklav)","tuba_eb":"Tuba i E♭ (G-klav, brassband)","tuba_bb":"Tuba i B♭ (G-klav, brassband)","piano":"Piano","klokkespill":"Klockspel","xylofon":"Xylofon","pauker":"Pukor"},"levels":[{"name":"Nybörjare","sub":"kulturskola, år 1–2","body":"Dur i C, F och G (noterat), a-moll mot slutet. En oktav, lugnt och jämnt (♩ ≈ 60–72). Klang före teknik.","tips":["Långa toner först: 8+ slag per ton med lugn, jämn luftström eller jämna stråk.","Sjung skalan innan du spelar den — hör tonen innan du skapar den.","Använd spegel och lyssna: jämn klang på varje ton är viktigare än tempo."],"brassTips":["Långa toner först: 8+ slag på g¹ och c¹ (låga C) med lugn, öppen luftström.","Läppslurar på öppna deltoner (c¹–g¹–c²) utan ventiler före skalan.","Sjung eller ”buzza” skalan på munstycket innan du spelar den."]},{"name":"Övad","sub":"grad 3–5 / mellannivå","body":"Dur till 3–4 förtecken (blåsorkestertonarterna), moll i harmonisk och melodisk form, kromatisk skala, dominantseptima. Åttondelar ♩ ≈ 80–100, både bundet och artikulerat.","tips":["Öva skalan bundet först, sedan artikulerat i samma tempo — alltid med metronom.","Öva också uppifrån och ned — nedvägen avslöjar ojämnheter.","Planera andningen/stråket: sista tonen lika full som första."],"brassTips":["Dagliga läppslurar (Arban/Schlossberg) på alla ventilkombinationer.","Öva skalan bundet först, sedan artikulerat i samma tempo — alltid med metronom.","Planera andningen: högst ett andetag per oktavlöpning, och sista tonen lika full som första."]},{"name":"Avancerad","sub":"musikgymnasium / grad 6–8","body":"Alla 12 dur- och molltonarter utantill, arpeggion (dur, moll, dom7, dim7). Två oktaver där registret tillåter. Sextondelar ♩ ≈ 80–112, blandade artikulationer.","tips":["Öva skalorna också i tersmönster och med rytmvariationer.","Två oktaver kommer ur kontroll och avspändhet — inte kraft.","Kyrkotonarterna: samma förtecken, ny utgångspunkt — hör skillnaden."],"brassTips":["Öva skalorna också uppifrån och ned, och i tersmönster.","Två oktaver kommer ur luftstöd och flexibilitet — inte munstyckestryck.","Kyrkotonarterna: samma förtecken, ny utgångspunkt — hör skillnaden."]},{"name":"Professionell","sub":"musikhögskola / daglig rutin","body":"Alla tonarter i alla modi, jazz- och symmetriska skalor, mönsterstudier genom hela registret — i alla artikulationer och nyanser.","tips":["Rotera: en tonart per dag, genom alla modi och arpeggion.","Öva i alla nyanser — pianissimo avslöjar mest.","Transponera etyder: tänk klingande och noterat samtidigt."],"brassTips":["Clarke-studie nr 2 genom alla tonarter — pianissimo och obesvärat.","Rotera: en tonart per dag, genom alla modi och arpeggion.","Transponera etyder: tänk klingande och noterat samtidigt."]}],"theory":{"tKvintTitle":"Så läser du kvintcirkeln","tKvint":"<p>Kvintcirkeln ordnar alla tonarter efter hur många fasta förtecken de har. Ett steg <b>medurs</b> är en ren kvint upp — och ett kors mer (eller ett b mindre). Ett steg <b>moturs</b> är en kvint ned — ett b mer.</p><p>Granntonarter delar sex av sju toner och klingar därför nära besläktade. Det är skälet till att <b>dominanten (D)</b> — kvinten över — och <b>subdominanten (S)</b> — kvinten under — är de viktigaste ackordfunktionerna vid sidan av tonikan.</p><p>Yttre och inre ring på samma plats delar fasta förtecken: det är <b>parallelltonarter</b> (t.ex. {exMajor} och {exMinor}). Längst ned i cirkeln möts kors- och b-sidan i de <b>enharmoniska</b> tonarterna: samma klingande toner, två skrivsätt.</p>","tFortegnTitle":"Förtecken: ordning och alla tonarter","tFortegn":"<p>Korsen kommer alltid i ordningen <b>{sharpOrder}</b> (kvintvis uppåt). B-förtecknen kommer i omvänd ordning: <b>{flatOrder}</b> (kvintvis nedåt).</p><p>Två användbara minnesregler: <b>sista korset</b> ligger ett halvtonsteg under grundtonen i dur (ledtonen). <b>Näst sista b:et</b> <i>är</i> durtonarten.</p>","thSig":"Fasta förtecken","thDur":"Dur","thMoll":"Moll","thAccs":"Förtecknen","tParallellTitle":"Parallelltonart och varianttonart","tParallell":"<p>I svensk (och tysk) teori betyder <b>parallelltonart</b> dur- och molltonarten som delar fasta förtecken, med grundtoner en liten ters från varandra: {exKey} ↔ {exRel}. (På engelska heter detta ”relative key” — var uppmärksam vid översättningar!)</p><p><b>Varianttonart</b> är dur och moll på <i>samma grundton</i>, t.ex. {exVar1} och {exVar2} — samma tonika, men tre förteckens skillnad.</p><p>Moll finns i tre former: <b>ren</b> (som parallell dur), <b>harmonisk</b> (höjt 7:e steg — ger ledton och en karakteristisk överstigande sekund) och <b>melodisk</b> (höjt 6:e och 7:e steg uppåt; ren form nedåt i klassisk tradition).</p>","tTranspTitle":"Transponering: {instr} och andra instrument","tTranspTransposing":"<p>{instr} är ett <b>transponerande instrument</b>: ett noterat C klingar som {soundsNote} — {interval} {direction}. För att få en önskad klingande ton noterar man därför {interval} {oppositeDirection}.</p>","tTranspNon":"<p>{instr} är <b>icke-transponerande</b>: noterad not och klingande ton är densamma. Tabellen nedan visar ändå hur transponerande instrument förhåller sig till klingande tonhöjd.</p>","tTranspTable":"<p>Samma princip gäller resten av orkestern: <b>klarinett i B♭</b> (stor sekund upp), <b>valthorn i F</b> (ren kvint upp), <b>altsaxofon i E♭</b> (stor sext upp), <b>kontrabas</b> (en oktav upp). Tumregel: instrumentets namn är den klingande tonen när det spelar ett noterat C.</p>","thConcert":"Klingande (konsert)","thWritten":"Noterat för {instr}","thWrittenSig":"Noterade förtecken","lower":"lägre","higher":"högre","up":"upp","down":"ned","tIntonasjonTitle":"Intonation på bleckblås med ventiler","tIntonasjon":"<p>Ventilerna sänker tonen med fasta rörlängder, men kombinationer blir för korta — därför är vissa grepp systematiskt ostämda:</p><p><b>1·3 och 1·2·3 är höga.</b> Noterat {noteD4} (1·3) och {noteCiss4} (1·2·3) är de ökända: skjut ut tredje ventilbygeln (ca 1–1,5 cm för 1·3, 2–2,5 cm för 1·2·3).</p><p><b>5:e deltonen är låg.</b> Noterat {noteE5} med öppet grepp ligger ~14 cent lågt — justera med läppen, eller använd 1·2 (6:e deltonen) som alternativgrepp.</p><p><b>7:e deltonen undviks.</b> Öppet {noteB5} ligger ~31 cent lågt och används bara till jazzeffekter (”shake”) — spela den med första ventilen.</p><p>Tredje ventilen ensam ≈ 1·2 och används som alternativgrepp för drillar och intonation ({alt3list}).</p>","tGrepTitle":"Fullständig grepptabell (kromatisk, noterat {low}–{high})","tGrep":"<p>Alla grepp för {instr}, från lägsta tonen ({low}) och upp i högt register. Toner som ingår i vald skala är markerade. Håll pekaren över en cell för alternativgrepp och intonationstips. Oktavtal enligt internationell standard: C4 = ettstrukna c.</p>","tGrepPiccoloNote":"<p>Obs: piccolatrumpet har vanligtvis en fjärde ventil (sänker en ren kvart) som utökar registret nedåt.</p>"},"footer":{"ruleTransposing":"{instr}: noterad ton klingar {interval} {direction}.","ruleNon":"{instr}: noterad och klingande tonhöjd är densamma."}},"da":{"meta":{"lang":"da","name":"Dansk"},"ui":{"title":"Nodecirklen","subtitle":"Tonearter, skalaer, transponering og greb til hele orkestret. Vælg sprog og instrument, klik i kvintcirklen — og se noder, fortegn og greb fra begynder- til professionelt niveau.","language":"Sprog","instrument":"Instrument","view":"Visning","viewConcert":"Klingende (C)","viewWritten":"Noteret for {instr}","naming":"Nodenavne","namingNative":"Dansk (H · B · Fis)","namingIntl":"International (B · B♭ · F♯)","scale":"Skala","range":"Omfang","oct1":"1 oktav","oct2":"2 oktaver","direction":"Retning","dirUp":"Op","dirUpDown":"Op og ned","tempo":"Tempo","bpm":"slag/min","play":"Spil skalaen","stop":"Stop","playSounding":"Spil klingende (som {instr})","circleTitle":"Kvintcirklen","circleHint":"Ydre ring: dur. Indre ring: mol. Med uret = en kvint op (+1 kryds), mod uret = en kvint ned (+1 b).","dur":"Dur","moll":"Mol","enhSwap":"Enharmonisk skift","hubOn":"på {instr}: {key}","hubSounds":"klingende: {key}","looseAccs":"(løse fortegn)","writtenKeyFor":"Noteret toneart for {instr}","concertKey":"Klingende toneart (koncert)","factSig":"Faste fortegn","factRel":"Paralleltoneart (fælles fortegn)","factVar":"Variant-toneart (fælles grundtone)","factDom":"Dominant (D)","factSub":"Subdominant (S)","factEnh":"Enharmonisk lig","noSig":"ingen faste fortegn","sharpOne":"kryds","sharpMany":"krydser","flatOne":"b","flatMany":"b'er","soundsAs":"Klinger som <b>{key}</b> ({interval} {dir}).","writtenAs":"På {instr} noteres dette som <b>{key}</b> ({interval} {dir}).","nonTransposing":"{instr} er ikke-transponerende: noteret og klingende tonehøjde er den samme.","staffHintWritten":"Grebene gælder de noterede noder. Klik på en node for at høre den.","staffHintConcert":"Noderne er klingende; grebene viser, hvad {instr} bruger. Klik på en node for at høre den.","staffHintNoFing":"Klik på en node for at høre den.","stepsLabel":"Trin","stepsLegend":"1 = heltonetrin, ½ = halvtonetrin","chromSteps":"kun halvtonetrin (½ × 12 pr. oktav)","keyboard":"Klaviatur","kbdWritten":"Skalaens noterede toner — klinger {interval} lavere.","kbdWrittenUp":"Skalaens noterede toner — klinger {interval} højere.","kbdConcert":"Skalaens klingende toner.","kbdRoot":"Grundtonen er udfyldt.","levelsTitle":"Fra begynder til professionel","levelsHint":"Almindelig progression for skalaer. Klik på et niveau for anbefalinger, og klik på en toneart for at hente den frem.","theoryTitle":"Teori og opslag","harm":"(harm.)","mel":"(mel.)","openValve":"åbent","fingering":"greb","alt":"alt","outOfRange":"uden for normalt register","forWritten":"for noteret {note}","octaveWord":"oktav","written":"noteret","sounding":"klingende","footerTuning":"Stemning: A4 = 440 Hz, ligesvævende temperatur.","octaves":"oktav|oktaver","and":"og","fingClause":" Grebene under noderne gælder de noterede toner."},"intonation":{"i123":"Har tendens til at være høj — skub 3.-ventilbøjlen ud","i13":"Har tendens til at være høj — brug 3.-ventilbøjlen","i5th":"5. deltone — kan ligge lavt på åbent greb","ihigh":"Højt register","ihigh12":"Højt register — intonationen styres mest af læberne"},"intervals":{"qualities":{"perf":"ren","maj":"stor","min":"lille"},"numbers":["prim","sekund","terts","kvart","kvint","sekst","septim"],"octaveOne":"en oktav","octaveTwo":"to oktaver","pattern":"en {qual} {num}","octavePlus":"{oct} og en {qual} {num}"},"keys":{"majorPattern":"{note}-dur","minorPattern":"{note}-mol","minorLowercase":true},"scales":{"dur":"Dur (jonisk)","nmoll":"Naturlig mol (æolisk)","durpent":"Dur-pentaton","hmoll":"Harmonisk mol","mmoll":"Melodisk mol (opadgående)","mollpent":"Mol-pentaton","blues":"Blues","krom":"Kromatisk","dorisk":"Dorisk","frygisk":"Frygisk","lydisk":"Lydisk","mikso":"Mixolydisk","lokrisk":"Lokrisk","heltone":"Heltoneskala","dimhh":"Dim (hel–halv)","dimhalv":"Dim (halv–hel)","alterert":"Altereret (superlokrisk)","lyddom":"Lydisk dominant","frygdom":"Frygisk dominant","bebopdom":"Bebop-dominant","bebopdur":"Bebop-dur","arpdur":"Dur-treklang","arpmoll":"Mol-treklang","arpdom7":"Dominantseptim","arpmaj7":"Maj7","arpm7":"Mol7","arpdim7":"Dim7","arpSuffix":"(arpeggio)"},"scaleGroups":{"g1":"Niveau 1 · Grundskalaer","g2":"Niveau 2 · Mol-varianter og blues","g3":"Niveau 3 · Kirketonearter (modi)","g4":"Niveau 3–4 · Arpeggioer","g5":"Niveau 4 · Jazz og symmetriske"},"instrumentGroups":{"strings":"Strygere","woodwind":"Træblæsere","brass":"Messingblæsere","other":"Tangenter og slagtøj"},"instruments":{"violin":"Violin","viola":"Bratsch","cello":"Cello","dbass":"Kontrabas","piccolo":"Piccolofløjte","flute":"Fløjte","altflute":"Altfløjte i G","oboe":"Obo","englhorn":"Engelskhorn i F","klar_bb":"Klarinet i B♭","klar_a":"Klarinet i A","klar_eb":"Klarinet i E♭","bassklar":"Basklarinet i B♭","fagott":"Fagot","kontrafag":"Kontrafagot","sopransax":"Sopransaxofon i B♭","altsax":"Altsaxofon i E♭","tenorsax":"Tenorsaxofon i B♭","barisax":"Barytonsaxofon i E♭","tromp_bb":"Trompet i B♭","tromp_c":"Trompet i C","tromp_d":"Trompet i D","tromp_eb":"Trompet i E♭","picctromp":"Piccolotrompet i B♭","kornett_bb":"Kornet i B♭","kornett_eb":"Soprankornet i E♭","flygelhorn":"Flygelhorn i B♭","basstromp":"Bastrompet i B♭","horn_f":"Valdhorn i F","althorn":"Althorn i E♭","trombone":"Basun","basstrombone":"Basbasun","eufonium_c":"Euphonium (basnøgle)","eufonium_bb":"Euphonium/baryton i B♭ (G-nøgle)","tuba":"Tuba (basnøgle)","tuba_eb":"Tuba i E♭ (G-nøgle, brassband)","tuba_bb":"Tuba i B♭ (G-nøgle, brassband)","piano":"Klaver","klokkespill":"Klokkespil","xylofon":"Xylofon","pauker":"Pauker"},"levels":[{"name":"Begynder","sub":"musikskole, 1.–2. år","body":"Dur i C, F og G (noteret), a-mol hen mod slutningen. Én oktav, roligt og jævnt (♩ ≈ 60–72). Klang før teknik.","tips":["Lange toner først: 8+ slag pr. tone med rolig, jævn luftstrøm eller jævnt strøg.","Syng skalaen, før du spiller den — hør tonen, før du laver den.","Brug spejl og lyt: en jævn klang på hver tone er vigtigere end tempo."],"brassTips":["Lange toner først: 8+ slag på g¹ og c¹ (lavt C) med rolig, åben luftstrøm.","Læbebindinger på åbne deltoner (c¹–g¹–c²) uden ventiler før skalaen.","Syng eller »buzz« skalaen på mundstykket, før du spiller den."]},{"name":"Øvet","sub":"grad 3–5 / mellemniveau","body":"Dur til 3–4 fortegn (de typiske orkestertonearter), mol i harmonisk og melodisk form, kromatisk skala, dominantseptim. Ottendedele ♩ ≈ 80–100, både bundet og med tungestød.","tips":["Øv skalaen bundet først, derefter artikuleret i samme tempo — altid med metronom.","Øv også oppefra og ned — nedturen afslører ujævnheder.","Planlæg vejrtrækningen/strøget: den sidste tone skal være lige så fuld som den første."],"brassTips":["Daglige læbebindinger (Arban/Schlossberg) på alle ventilkombinationer.","Øv skalaen bundet først, derefter med tungestød i samme tempo — altid med metronom.","Planlæg vejrtrækningen: højst én indånding pr. oktavløb, og den sidste tone lige så fuld som den første."]},{"name":"Viderekommen","sub":"MGK / grad 6–8","body":"Alle 12 dur- og moltonearter udenad, arpeggioer (dur, mol, dom7, dim7). To oktaver, hvor registeret tillader det. Sekstendedele ♩ ≈ 80–112, blandede artikulationer.","tips":["Øv også skalaerne i tertsmønstre og med rytmevariationer.","To oktaver kommer af kontrol og afspændthed — ikke af kraft.","Kirketonearterne: samme fortegn, nyt udgangspunkt — hør forskellen."],"brassTips":["Øv også skalaerne oppefra og ned samt i tertsmønstre.","To oktaver kommer af luftstøtte og fleksibilitet — ikke af mundstykkepres.","Kirketonearterne: samme fortegn, nyt udgangspunkt — hør forskellen."]},{"name":"Professionel","sub":"konservatorium / daglig rutine","body":"Alle tonearter i alle modi, jazz- og symmetriske skalaer, mønsterstudier gennem hele registeret — i alle artikulationer og dynamikker.","tips":["Rotér: én toneart om dagen, gennem alle modi og arpeggioer.","Øv i alle dynamikker — pianissimo afslører mest.","Transponér etuder: tænk klingende og noteret på samme tid."],"brassTips":["Clarke-studie nr. 2 gennem alle tonearter — pianissimo og ubesværet.","Rotér: én toneart om dagen, gennem alle modi og arpeggioer.","Transponér etuder: tænk klingende og noteret på samme tid."]}],"theory":{"tKvintTitle":"Sådan læser du kvintcirklen","tKvint":"<p>Kvintcirklen ordner alle tonearter efter, hvor mange faste fortegn de har. Ét trin <b>med uret</b> er en ren kvint op — og ét kryds mere (eller ét b mindre). Ét trin <b>mod uret</b> er en kvint ned — ét b mere.</p><p>Nabotonearter deler seks af syv toner og klinger derfor nært beslægtede. Det er grunden til, at <b>dominanten (D)</b> — kvinten over — og <b>subdominanten (S)</b> — kvinten under — er de vigtigste akkordfunktioner ved siden af tonika.</p><p>Ydre og indre ring på samme plads deler faste fortegn: det er <b>paralleltonearter</b> (f.eks. {exMajor} og {exMinor}). Nederst i cirklen mødes kryds- og b-siden i de <b>enharmoniske</b> tonearter: samme klingende toner, to skrivemåder.</p>","tFortegnTitle":"Fortegn: rækkefølge og alle tonearter","tFortegn":"<p>Krydserne kommer altid i rækkefølgen <b>{sharpOrder}</b> (kvintvis opad). B'erne kommer i modsat rækkefølge: <b>{flatOrder}</b> (kvintvis nedad).</p><p>To nyttige huskeregler: <b>det sidste kryds</b> ligger et halvtonetrin under grundtonen i dur (ledetonen). <b>Det næstsidste b</b> <i>er</i> durtonearten.</p>","thSig":"Faste fortegn","thDur":"Dur","thMoll":"Mol","thAccs":"Fortegnene","tParallellTitle":"Paralleltoneart og variant-toneart","tParallell":"<p>I dansk (og tysk) teori betyder <b>paralleltoneart</b> den dur- og moltoneart, der deler faste fortegn, med grundtoner en lille terts fra hinanden: {exKey} ↔ {exRel}. (På engelsk hedder det »relative key« — pas på ved oversættelser!)</p><p><b>Variant-toneart</b> er dur og mol på <i>samme grundtone</i>, f.eks. {exVar1} og {exVar2} — samme tonika, men tre fortegns forskel.</p><p>Mol findes i tre former: <b>naturlig</b> (som parallel dur), <b>harmonisk</b> (hævet 7. trin — giver ledetone og en karakteristisk forstørret sekund) og <b>melodisk</b> (hævet 6. og 7. trin opad; naturlig form nedad i klassisk tradition).</p>","tTranspTitle":"Transponering: {instr} og andre instrumenter","tTranspTransposing":"<p>{instr} er et <b>transponerende instrument</b>: et noteret C klinger som {soundsNote} — {interval} {direction}. For at få en ønsket klingende tone noterer man derfor {interval} {oppositeDirection}.</p>","tTranspNon":"<p>{instr} er <b>ikke-transponerende</b>: noteret node og klingende tone er den samme. Tabellen nedenfor viser alligevel, hvordan transponerende instrumenter forholder sig til klingende tonehøjde.</p>","tTranspTable":"<p>Samme princip gælder resten af orkestret: <b>klarinet i B♭</b> (en stor sekund op), <b>valdhorn i F</b> (en ren kvint op), <b>altsaxofon i E♭</b> (en stor sekst op), <b>kontrabas</b> (en oktav op). Tommelfingerregel: instrumentets navn er den klingende tone, når det spiller et noteret C.</p>","thConcert":"Klingende (koncert)","thWritten":"Noteret for {instr}","thWrittenSig":"Noterede fortegn","lower":"lavere","higher":"højere","up":"op","down":"ned","tIntonasjonTitle":"Intonation på messinginstrumenter med ventiler","tIntonasjon":"<p>Ventilerne sænker tonen med faste rørlængder, men kombinationer bliver for korte — derfor er nogle greb systematisk ustemte:</p><p><b>1·3 og 1·2·3 er høje.</b> Noteret {noteD4} (1·3) og {noteCiss4} (1·2·3) er de berygtede: skub 3.-ventilbøjlen ud (ca. 1–1,5 cm for 1·3, 2–2,5 cm for 1·2·3).</p><p><b>5. deltone er lav.</b> Noteret {noteE5} på åbent greb ligger ~14 cent for lavt — justér med læberne, eller brug 1·2 (6. deltone) som alternativt greb.</p><p><b>7. deltone undgås.</b> Åben {noteB5} ligger ~31 cent for lavt og bruges kun til jazz-effekter (»shake«) — spil den med 1. ventil.</p><p>3. ventil alene ≈ 1·2 og bruges som alternativt greb til triller og intonation ({alt3list}).</p>","tGrepTitle":"Fuld grebstabel (kromatisk, noteret {low}–{high})","tGrep":"<p>Alle greb for {instr}, fra den dybeste tone ({low}) og op i det høje register. Toner, der indgår i den valgte skala, er fremhævet. Hold markøren over en celle for alternative greb og intonationstips. Oktavtal efter international standard: C4 = enstreget c.</p>","tGrepPiccoloNote":"<p>Bemærk: piccolotrompet har normalt en 4. ventil (sænker en ren kvart), som udvider registeret nedad.</p>"},"footer":{"ruleTransposing":"{instr}: en noteret node klinger {interval} {direction}.","ruleNon":"{instr}: noteret og klingende tonehøjde er den samme."}},"de":{"meta":{"lang":"de","name":"Deutsch"},"ui":{"title":"Der Notenzirkel","subtitle":"Tonarten, Skalen, Transposition und Griffe für das ganze Orchester. Sprache und Instrument wählen, in den Quintenzirkel klicken — und Noten, Vorzeichen und Griffe vom Anfänger- bis zum Profiniveau sehen.","language":"Sprache","instrument":"Instrument","view":"Ansicht","viewConcert":"Klingend (C)","viewWritten":"Notiert für {instr}","naming":"Notennamen","namingNative":"Deutsch (H · B · Fis)","namingIntl":"International (B · B♭ · F♯)","scale":"Skala","range":"Umfang","oct1":"1 Oktave","oct2":"2 Oktaven","direction":"Richtung","dirUp":"Aufwärts","dirUpDown":"Auf und ab","tempo":"Tempo","bpm":"Schläge/min","play":"Skala abspielen","stop":"Stopp","playSounding":"Klingend abspielen (wie {instr})","circleTitle":"Der Quintenzirkel","circleHint":"Äußerer Ring: Dur. Innerer Ring: Moll. Im Uhrzeigersinn = Quinte aufwärts (+1 Kreuz), gegen den Uhrzeigersinn = Quinte abwärts (+1 B).","dur":"Dur","moll":"Moll","enhSwap":"Enharmonische Verwechslung","hubOn":"auf {instr}: {key}","hubSounds":"klingend: {key}","looseAccs":"(Versetzungszeichen)","writtenKeyFor":"Notierte Tonart für {instr}","concertKey":"Klingende Tonart (Konzert)","factSig":"Vorzeichen","factRel":"Paralleltonart (gemeinsame Vorzeichen)","factVar":"Varianttonart (gleicher Grundton)","factDom":"Dominante (D)","factSub":"Subdominante (S)","factEnh":"Enharmonisch gleich","noSig":"keine Vorzeichen","sharpOne":"Kreuz","sharpMany":"Kreuze","flatOne":"B","flatMany":"B","soundsAs":"Klingt wie <b>{key}</b> ({interval} {dir}).","writtenAs":"Für {instr} wird dies als <b>{key}</b> notiert ({interval} {dir}).","nonTransposing":"{instr} ist nicht transponierend: Notierte und klingende Tonhöhe sind gleich.","staffHintWritten":"Die Griffe gelten für die notierten Töne. Auf eine Note klicken, um sie zu hören.","staffHintConcert":"Die Noten sind klingend notiert; die Griffe zeigen, was {instr} verwendet. Auf eine Note klicken, um sie zu hören.","staffHintNoFing":"Auf eine Note klicken, um sie zu hören.","stepsLabel":"Schritte","stepsLegend":"1 = Ganztonschritt, ½ = Halbtonschritt","chromSteps":"nur Halbtonschritte (½ × 12 pro Oktave)","keyboard":"Klaviatur","kbdWritten":"Die notierten Töne der Skala — klingend {interval} tiefer.","kbdWrittenUp":"Die notierten Töne der Skala — klingend {interval} höher.","kbdConcert":"Die klingenden Töne der Skala.","kbdRoot":"Der Grundton ist ausgefüllt.","levelsTitle":"Vom Anfänger zum Profi","levelsHint":"Übliche Progression beim Skalenüben. Auf ein Niveau klicken für Empfehlungen, und auf eine Tonart klicken, um sie aufzurufen.","theoryTitle":"Theorie zum Nachschlagen","harm":"(harm.)","mel":"(mel.)","openValve":"offen","fingering":"Griff","alt":"alt.","outOfRange":"außerhalb des üblichen Registers","forWritten":"für notiertes {note}","octaveWord":"Oktave","written":"notiert","sounding":"klingend","footerTuning":"Stimmung: A4 = 440 Hz, gleichstufig temperiert.","octaves":"Oktave|Oktaven","and":"und","fingClause":" Die Griffe unter den Noten gelten für die notierten Töne."},"intonation":{"i123":"Wird leicht zu hoch — den 3. Ventilzug ausziehen","i13":"Wird leicht zu hoch — den 3. Ventilzug verwenden","i5th":"5. Naturton — kann beim offenen Griff zu tief liegen","ihigh":"Hohes Register","ihigh12":"Hohes Register — die Intonation wird vor allem von den Lippen gesteuert"},"intervals":{"qualities":{"perf":"reine","maj":"große","min":"kleine"},"numbers":["Prime","Sekunde","Terz","Quarte","Quinte","Sexte","Septime"],"octaveOne":"eine Oktave","octaveTwo":"zwei Oktaven","pattern":"eine {qual} {num}","octavePlus":"{oct} und eine {qual} {num}"},"keys":{"majorPattern":"{note}-Dur","minorPattern":"{note}-Moll","minorLowercase":true},"scales":{"dur":"Dur (ionisch)","nmoll":"Natürliches Moll (äolisch)","durpent":"Durpentatonik","hmoll":"Harmonisches Moll","mmoll":"Melodisches Moll (aufwärts)","mollpent":"Mollpentatonik","blues":"Blues","krom":"Chromatisch","dorisk":"Dorisch","frygisk":"Phrygisch","lydisk":"Lydisch","mikso":"Mixolydisch","lokrisk":"Lokrisch","heltone":"Ganztonleiter","dimhh":"Vermindert (Ganzton–Halbton)","dimhalv":"Vermindert (Halbton–Ganzton)","alterert":"Alteriert (superlokrisch)","lyddom":"Lydisch-dominant","frygdom":"Phrygisch-dominant","bebopdom":"Bebop-Dominant","bebopdur":"Bebop-Dur","arpdur":"Dur-Dreiklang","arpmoll":"Moll-Dreiklang","arpdom7":"Dominantseptakkord","arpmaj7":"Maj7","arpm7":"Moll7","arpdim7":"Dim7","arpSuffix":"(Arpeggio)"},"scaleGroups":{"g1":"Stufe 1 · Grundskalen","g2":"Stufe 2 · Moll-Varianten und Blues","g3":"Stufe 3 · Kirchentonarten (Modi)","g4":"Stufe 3–4 · Arpeggien","g5":"Stufe 4 · Jazz und symmetrische Skalen"},"instrumentGroups":{"strings":"Streicher","woodwind":"Holzbläser","brass":"Blechbläser","other":"Tasten und Schlagwerk"},"instruments":{"violin":"Violine","viola":"Viola","cello":"Violoncello","dbass":"Kontrabass","piccolo":"Piccoloflöte","flute":"Flöte","altflute":"Altflöte in G","oboe":"Oboe","englhorn":"Englischhorn in F","klar_bb":"Klarinette in B","klar_a":"Klarinette in A","klar_eb":"Klarinette in Es","bassklar":"Bassklarinette in B","fagott":"Fagott","kontrafag":"Kontrafagott","sopransax":"Sopransaxophon in B","altsax":"Altsaxophon in Es","tenorsax":"Tenorsaxophon in B","barisax":"Baritonsaxophon in Es","tromp_bb":"Trompete in B","tromp_c":"Trompete in C","tromp_d":"Trompete in D","tromp_eb":"Trompete in Es","picctromp":"Piccolotrompete in B","kornett_bb":"Kornett in B","kornett_eb":"Soprankornett in Es","flygelhorn":"Flügelhorn in B","basstromp":"Basstrompete in B","horn_f":"Horn in F","althorn":"Althorn in Es","trombone":"Posaune","basstrombone":"Bassposaune","eufonium_c":"Euphonium (Bassschlüssel)","eufonium_bb":"Euphonium/Bariton in B (Violinschlüssel)","tuba":"Tuba (Bassschlüssel)","tuba_eb":"Tuba in Es (Violinschlüssel, Brassband)","tuba_bb":"Tuba in B (Violinschlüssel, Brassband)","piano":"Klavier","klokkespill":"Glockenspiel","xylofon":"Xylophon","pauker":"Pauken"},"levels":[{"name":"Anfänger","sub":"Musikschule, 1.–2. Jahr","body":"Dur in C, F und G (notiert), gegen Ende a-Moll. Eine Oktave, ruhig und gleichmäßig (♩ ≈ 60–72). Klang vor Technik.","tips":["Zuerst lange Töne: 8+ Schläge pro Ton mit ruhigem, gleichmäßigem Luftstrom oder Bogenstrich.","Die Skala vor dem Spielen singen — den Ton hören, bevor man ihn erzeugt.","Spiegel benutzen und zuhören: Ein gleichmäßiger Klang auf jedem Ton ist wichtiger als das Tempo."],"brassTips":["Zuerst lange Töne: 8+ Schläge auf g¹ und c¹ (tiefes C) mit ruhigem, offenem Luftstrom.","Lippenbindungen auf offenen Naturtönen (c¹–g¹–c²) ohne Ventile vor der Skala.","Die Skala singen oder auf dem Mundstück „buzzen“, bevor man sie spielt."]},{"name":"Mittelstufe","sub":"Stufe 3–5 / mittleres Niveau","body":"Dur bis 3–4 Vorzeichen (die Blasorchester-Tonarten), Moll in harmonischer und melodischer Form, chromatische Tonleiter, Dominantseptakkord. Achtel bei ♩ ≈ 80–100, sowohl gebunden als auch gestoßen.","tips":["Die Skala zuerst gebunden üben, dann artikuliert im gleichen Tempo — immer mit Metronom.","Auch von oben nach unten üben — der Abstieg deckt Ungleichmäßigkeiten auf.","Atmung/Bogenstrich planen: Der letzte Ton soll so voll klingen wie der erste."],"brassTips":["Tägliche Lippenbindungen (Arban/Schlossberg) auf allen Ventilkombinationen.","Die Skala zuerst gebunden üben, dann gestoßen im gleichen Tempo — immer mit Metronom.","Die Atmung planen: höchstens ein Atemzug pro Oktavlauf, und der letzte Ton so voll wie der erste."]},{"name":"Fortgeschritten","sub":"Musikgymnasium / Stufe 6–8","body":"Alle 12 Dur- und Molltonarten auswendig, Arpeggien (Dur, Moll, Dom7, Dim7). Zwei Oktaven, wo das Register es zulässt. Sechzehntel bei ♩ ≈ 80–112, gemischte Artikulationen.","tips":["Die Skalen auch in Terzmustern und mit Rhythmusvariationen üben.","Zwei Oktaven entstehen durch Kontrolle und Entspannung — nicht durch Kraft.","Die Kirchentonarten: gleiche Vorzeichen, neuer Ausgangspunkt — den Unterschied hören."],"brassTips":["Die Skalen auch von oben nach unten und in Terzmustern üben.","Zwei Oktaven entstehen durch Luftstütze und Flexibilität — nicht durch Mundstückdruck.","Die Kirchentonarten: gleiche Vorzeichen, neuer Ausgangspunkt — den Unterschied hören."]},{"name":"Profi","sub":"Konservatorium / tägliche Routine","body":"Alle Tonarten in allen Modi, Jazz-Skalen und symmetrische Skalen, Pattern-Studien durch das gesamte Register — in allen Artikulationen und Dynamikstufen.","tips":["Rotieren: eine Tonart pro Tag, durch alle Modi und Arpeggien.","In allen Dynamikstufen üben — Pianissimo deckt am meisten auf.","Etüden transponieren: klingend und notiert gleichzeitig denken."],"brassTips":["Clarke-Studie Nr. 2 durch alle Tonarten — pianissimo und mühelos.","Rotieren: eine Tonart pro Tag, durch alle Modi und Arpeggien.","Etüden transponieren: klingend und notiert gleichzeitig denken."]}],"theory":{"tKvintTitle":"So liest man den Quintenzirkel","tKvint":"<p>Der Quintenzirkel ordnet alle Tonarten danach, wie viele Vorzeichen sie haben. Ein Schritt <b>im Uhrzeigersinn</b> ist eine reine Quinte aufwärts — und ein Kreuz mehr (oder ein B weniger). Ein Schritt <b>gegen den Uhrzeigersinn</b> ist eine Quinte abwärts — ein B mehr.</p><p>Benachbarte Tonarten teilen sechs von sieben Tönen und klingen daher eng verwandt. Das ist der Grund, warum die <b>Dominante (D)</b> — die Quinte darüber — und die <b>Subdominante (S)</b> — die Quinte darunter — neben der Tonika die wichtigsten Akkordfunktionen sind.</p><p>Äußerer und innerer Ring an derselben Position teilen die Vorzeichen: Das sind <b>Paralleltonarten</b> (z. B. {exMajor} und {exMinor}). Unten im Zirkel treffen sich Kreuz- und B-Seite in den <b>enharmonischen</b> Tonarten: gleiche klingende Töne, zwei Schreibweisen.</p>","tFortegnTitle":"Vorzeichen: Reihenfolge und alle Tonarten","tFortegn":"<p>Die Kreuze folgen immer der Reihenfolge <b>{sharpOrder}</b> (quintweise aufwärts). Die B-Vorzeichen kommen in umgekehrter Reihenfolge: <b>{flatOrder}</b> (quintweise abwärts).</p><p>Zwei nützliche Merkregeln: Das <b>letzte Kreuz</b> liegt einen Halbtonschritt unter dem Grundton der Durtonart (Leitton). Das <b>vorletzte B</b> <i>ist</i> die Durtonart.</p>","thSig":"Vorzeichen","thDur":"Dur","thMoll":"Moll","thAccs":"Die Vorzeichen","tParallellTitle":"Paralleltonart und Varianttonart","tParallell":"<p>In der deutschen (und norwegischen) Theorie bezeichnet <b>Paralleltonart</b> die Dur- und Molltonart mit gemeinsamen Vorzeichen, deren Grundtöne eine kleine Terz auseinanderliegen: {exKey} ↔ {exRel}. (Im Englischen heißt das „relative key“ — Vorsicht beim Übersetzen!)</p><p>Die <b>Varianttonart</b> ist Dur und Moll auf <i>demselben Grundton</i>, z. B. {exVar1} und {exVar2} — gleiche Tonika, aber drei Vorzeichen Unterschied.</p><p>Moll gibt es in drei Formen: <b>natürlich</b> (wie die Durparallele), <b>harmonisch</b> (erhöhte 7. Stufe — ergibt einen Leitton und eine charakteristische übermäßige Sekunde) und <b>melodisch</b> (erhöhte 6. und 7. Stufe aufwärts; abwärts in der klassischen Tradition die natürliche Form).</p>","tTranspTitle":"Transposition: {instr} und andere Instrumente","tTranspTransposing":"<p>{instr} ist ein <b>transponierendes Instrument</b>: Ein notiertes C klingt als {soundsNote} — {interval} {direction}. Um einen gewünschten klingenden Ton zu erhalten, notiert man daher {interval} {oppositeDirection}.</p>","tTranspNon":"<p>{instr} ist <b>nicht transponierend</b>: Notierte Note und klingender Ton sind identisch. Die Tabelle unten zeigt dennoch, wie sich transponierende Instrumente zur klingenden Tonhöhe verhalten.</p>","tTranspTable":"<p>Dasselbe Prinzip gilt für den Rest des Orchesters: <b>Klarinette in B</b> (große Sekunde aufwärts), <b>Horn in F</b> (reine Quinte aufwärts), <b>Altsaxophon in Es</b> (große Sexte aufwärts), <b>Kontrabass</b> (eine Oktave aufwärts). Faustregel: Der Name des Instruments ist der klingende Ton, wenn es ein notiertes C spielt.</p>","thConcert":"Klingend (Konzert)","thWritten":"Notiert für {instr}","thWrittenSig":"Notierte Vorzeichen","lower":"tiefer","higher":"höher","up":"aufwärts","down":"abwärts","tIntonasjonTitle":"Intonation auf Blechblasinstrumenten mit Ventilen","tIntonasjon":"<p>Die Ventile senken den Ton um feste Rohrlängen, doch Kombinationen werden zu kurz — deshalb sind manche Griffe systematisch verstimmt:</p><p><b>1·3 und 1·2·3 sind zu hoch.</b> Notiertes {noteD4} (1·3) und {noteCiss4} (1·2·3) sind die berüchtigten: den 3. Ventilzug ausziehen (ca. 1–1,5 cm bei 1·3, 2–2,5 cm bei 1·2·3).</p><p><b>Der 5. Naturton ist zu tief.</b> Notiertes {noteE5} auf offenem Griff liegt ~14 Cent zu tief — mit den Lippen korrigieren oder 1·2 (6. Naturton) als Alternativgriff verwenden.</p><p><b>Der 7. Naturton wird vermieden.</b> Offenes {noteB5} liegt ~31 Cent zu tief und wird nur für Jazz-Effekte („Shake“) verwendet — mit dem 1. Ventil spielen.</p><p>Das 3. Ventil allein ≈ 1·2 und dient als Alternativgriff für Triller und Intonation ({alt3list}).</p>","tGrepTitle":"Vollständige Grifftabelle (chromatisch, notiert {low}–{high})","tGrep":"<p>Alle Griffe für {instr}, vom tiefsten Ton ({low}) bis hinauf ins hohe Register. Töne der gewählten Skala sind hervorgehoben. Den Mauszeiger über eine Zelle halten für Alternativgriffe und Intonationstipps. Oktavzahlen nach internationalem Standard: C4 = eingestrichenes c.</p>","tGrepPiccoloNote":"<p>Hinweis: Die Piccolotrompete hat üblicherweise ein 4. Ventil (senkt um eine reine Quarte), das den Tonumfang nach unten erweitert.</p>"},"footer":{"ruleTransposing":"{instr}: Eine notierte Note klingt {interval} {direction}.","ruleNon":"{instr}: Notierte und klingende Tonhöhe sind gleich."}},"fr":{"meta":{"lang":"fr","name":"Français"},"ui":{"title":"Le Cercle des notes","subtitle":"Tonalités, gammes, transposition et doigtés pour tout l'orchestre. Choisissez la langue et l'instrument, cliquez dans le cycle des quintes — et découvrez notes, altérations et doigtés, du niveau débutant au niveau professionnel.","language":"Langue","instrument":"Instrument","view":"Affichage","viewConcert":"Sons réels (en Ut)","viewWritten":"Écrit pour {instr}","naming":"Noms des notes","namingNative":"Solfège (Do · Ré · Mi)","namingIntl":"Internationale (B · B♭ · F♯)","scale":"Gamme","range":"Étendue","oct1":"1 octave","oct2":"2 octaves","direction":"Sens","dirUp":"Montante","dirUpDown":"Montante et descendante","tempo":"Tempo","bpm":"batt./min","play":"Jouer la gamme","stop":"Arrêter","playSounding":"Jouer en sons réels (comme {instr})","circleTitle":"Le cycle des quintes","circleHint":"Anneau extérieur : majeur. Anneau intérieur : mineur. Sens horaire = une quinte vers le haut (+1 dièse), sens antihoraire = une quinte vers le bas (+1 bémol).","dur":"Majeur","moll":"Mineur","enhSwap":"Échange enharmonique","hubOn":"sur {instr} : {key}","hubSounds":"sons réels : {key}","looseAccs":"(altérations accidentelles)","writtenKeyFor":"Tonalité écrite pour {instr}","concertKey":"Tonalité réelle (concert)","factSig":"Armure","factRel":"Tonalité relative (même armure)","factVar":"Tonalité homonyme (même tonique)","factDom":"Dominante (D)","factSub":"Sous-dominante (S)","factEnh":"Équivalent enharmonique","noSig":"aucune altération à l'armure","sharpOne":"dièse","sharpMany":"dièses","flatOne":"bémol","flatMany":"bémols","soundsAs":"Sonne comme <b>{key}</b> ({interval} {dir}).","writtenAs":"Sur {instr}, cela s'écrit <b>{key}</b> ({interval} {dir}).","nonTransposing":"{instr} est un instrument non transpositeur : la hauteur écrite et la hauteur réelle sont identiques.","staffHintWritten":"Les doigtés correspondent aux notes écrites. Cliquez sur une note pour l'écouter.","staffHintConcert":"Les notes sont en sons réels ; les doigtés sont ceux utilisés par {instr}. Cliquez sur une note pour l'écouter.","staffHintNoFing":"Cliquez sur une note pour l'écouter.","stepsLabel":"Structure","stepsLegend":"1 = ton, ½ = demi-ton","chromSteps":"uniquement des demi-tons (½ × 12 par octave)","keyboard":"Clavier","kbdWritten":"Notes écrites de la gamme — elles sonnent {interval} plus bas.","kbdWrittenUp":"Notes écrites de la gamme — elles sonnent {interval} plus haut.","kbdConcert":"Notes de la gamme en sons réels.","kbdRoot":"La tonique est indiquée en plein.","levelsTitle":"Du débutant au professionnel","levelsHint":"Progression habituelle pour les gammes. Cliquez sur un niveau pour voir les recommandations, et sur une tonalité pour l'afficher.","theoryTitle":"Théorie et références","harm":"(harm.)","mel":"(mél.)","openValve":"à vide","fingering":"doigté","alt":"alt.","outOfRange":"hors du registre habituel","forWritten":"pour {note} écrit","octaveWord":"octave","written":"écrit","sounding":"réel","footerTuning":"Diapason : La4 = 440 Hz, tempérament égal.","octaves":"octave|octaves","and":"et","fingClause":" Les doigtés sous les notes correspondent aux notes écrites."},"intonation":{"i123":"A tendance à sonner haut — sortez la coulisse du 3e piston","i13":"A tendance à sonner haut — utilisez la coulisse du 3e piston","i5th":"5e harmonique — peut être bas en doigté à vide","ihigh":"Registre aigu","ihigh12":"Registre aigu — l'intonation dépend surtout des lèvres"},"intervals":{"qualities":{"perf":"juste","maj":"majeure","min":"mineure"},"numbers":["unisson","seconde","tierce","quarte","quinte","sixte","septième"],"octaveOne":"une octave","octaveTwo":"deux octaves","pattern":"une {num} {qual}","octavePlus":"{oct} et une {num} {qual}"},"keys":{"majorPattern":"{note} majeur","minorPattern":"{note} mineur","minorLowercase":true},"scales":{"dur":"Majeur (ionien)","nmoll":"Mineur naturel (éolien)","durpent":"Pentatonique majeure","hmoll":"Mineur harmonique","mmoll":"Mineur mélodique (ascendant)","mollpent":"Pentatonique mineure","blues":"Blues","krom":"Chromatique","dorisk":"Dorien","frygisk":"Phrygien","lydisk":"Lydien","mikso":"Mixolydien","lokrisk":"Locrien","heltone":"Gamme par tons","dimhh":"Diminuée (ton–demi-ton)","dimhalv":"Diminuée (demi-ton–ton)","alterert":"Altérée (super-locrien)","lyddom":"Lydien dominant","frygdom":"Phrygien dominant","bebopdom":"Bebop dominante","bebopdur":"Bebop majeure","arpdur":"Accord parfait majeur","arpmoll":"Accord parfait mineur","arpdom7":"Septième de dominante","arpmaj7":"Maj7","arpm7":"Mineur 7","arpdim7":"Septième diminuée","arpSuffix":"(arpège)"},"scaleGroups":{"g1":"Niveau 1 · Gammes de base","g2":"Niveau 2 · Formes du mineur et blues","g3":"Niveau 3 · Modes ecclésiastiques","g4":"Niveaux 3–4 · Arpèges","g5":"Niveau 4 · Jazz et gammes symétriques"},"instrumentGroups":{"strings":"Cordes","woodwind":"Bois","brass":"Cuivres","other":"Claviers et percussions"},"instruments":{"violin":"Violon","viola":"Alto","cello":"Violoncelle","dbass":"Contrebasse","piccolo":"Piccolo","flute":"Flûte","altflute":"Flûte alto en Sol","oboe":"Hautbois","englhorn":"Cor anglais en Fa","klar_bb":"Clarinette en Si♭","klar_a":"Clarinette en La","klar_eb":"Petite clarinette en Mi♭","bassklar":"Clarinette basse en Si♭","fagott":"Basson","kontrafag":"Contrebasson","sopransax":"Saxophone soprano en Si♭","altsax":"Saxophone alto en Mi♭","tenorsax":"Saxophone ténor en Si♭","barisax":"Saxophone baryton en Mi♭","tromp_bb":"Trompette en Si♭","tromp_c":"Trompette en Ut","tromp_d":"Trompette en Ré","tromp_eb":"Trompette en Mi♭","picctromp":"Trompette piccolo en Si♭","kornett_bb":"Cornet en Si♭","kornett_eb":"Cornet soprano en Mi♭","flygelhorn":"Bugle en Si♭","basstromp":"Trompette basse en Si♭","horn_f":"Cor en Fa","althorn":"Saxhorn alto en Mi♭","trombone":"Trombone","basstrombone":"Trombone basse","eufonium_c":"Euphonium (clé de fa)","eufonium_bb":"Euphonium/baryton en Si♭ (clé de sol)","tuba":"Tuba (clé de fa)","tuba_eb":"Tuba en Mi♭ (clé de sol, brass band)","tuba_bb":"Tuba en Si♭ (clé de sol, brass band)","piano":"Piano","klokkespill":"Glockenspiel","xylofon":"Xylophone","pauker":"Timbales"},"levels":[{"name":"Débutant","sub":"école de musique, 1re–2e année","body":"Majeur en Do, Fa et Sol (écrits), la mineur vers la fin. Une octave, calme et régulière (♩ ≈ 60–72). Le son avant la technique.","tips":["Les sons longs d'abord : 8 temps ou plus par note, avec un souffle ou un archet calme et régulier.","Chantez la gamme avant de la jouer — entendez la note avant de la produire.","Utilisez un miroir et écoutez : un son égal sur chaque note compte plus que le tempo."],"brassTips":["Les sons longs d'abord : 8 temps ou plus sur sol¹ et do¹ (do grave), avec un souffle calme et ouvert.","Souplesses sur les harmoniques à vide (do¹–sol¹–do²), sans pistons, avant la gamme.","Chantez ou « buzzez » la gamme sur l'embouchure avant de la jouer."]},{"name":"Intermédiaire","sub":"degrés 3–5 / 2e cycle","body":"Majeur jusqu'à 3–4 altérations (les tonalités d'harmonie), mineur harmonique et mélodique, gamme chromatique, septième de dominante. Croches à ♩ ≈ 80–100, en lié comme en détaché.","tips":["Travaillez la gamme d'abord en lié, puis en articulé au même tempo — toujours avec le métronome.","Travaillez aussi en partant du haut — la descente révèle les inégalités.","Planifiez la respiration ou l'archet : la dernière note aussi pleine que la première."],"brassTips":["Souplesses quotidiennes (Arban/Schlossberg) sur toutes les combinaisons de pistons.","Travaillez la gamme d'abord en lié, puis en détaché au même tempo — toujours avec le métronome.","Planifiez la respiration : une seule respiration au maximum par octave, et la dernière note aussi pleine que la première."]},{"name":"Avancé","sub":"degrés 6–8 / 3e cycle","body":"Les 12 tonalités majeures et mineures par cœur, arpèges (majeur, mineur, 7e de dominante, 7e diminuée). Deux octaves quand le registre le permet. Doubles croches à ♩ ≈ 80–112, articulations variées.","tips":["Travaillez aussi les gammes en tierces et avec des variations rythmiques.","Les deux octaves viennent du contrôle et de la détente — pas de la force.","Les modes : même armure, nouveau point de départ — écoutez la différence."],"brassTips":["Travaillez aussi les gammes en partant du haut, et en tierces.","Les deux octaves viennent du soutien de l'air et de la souplesse — pas de la pression de l'embouchure.","Les modes : même armure, nouveau point de départ — écoutez la différence."]},{"name":"Professionnel","sub":"conservatoire / routine quotidienne","body":"Toutes les tonalités dans tous les modes, gammes de jazz et gammes symétriques, études de motifs sur toute l'étendue du registre — dans toutes les articulations et toutes les nuances.","tips":["Alternez : une tonalité par jour, à travers tous les modes et arpèges.","Travaillez dans toutes les nuances — le pianissimo est le plus révélateur.","Transposez des études : pensez simultanément en sons réels et en notes écrites."],"brassTips":["L'étude n° 2 de Clarke dans toutes les tonalités — pianissimo et sans effort.","Alternez : une tonalité par jour, à travers tous les modes et arpèges.","Transposez des études : pensez simultanément en sons réels et en notes écrites."]}],"theory":{"tKvintTitle":"Comment lire le cycle des quintes","tKvint":"<p>Le cycle des quintes classe toutes les tonalités selon le nombre d'altérations à l'armure. Un pas <b>dans le sens horaire</b> correspond à une quinte juste vers le haut — et à un dièse de plus (ou un bémol de moins). Un pas <b>dans le sens antihoraire</b> correspond à une quinte vers le bas — un bémol de plus.</p><p>Les tonalités voisines partagent six notes sur sept et sonnent donc étroitement apparentées. C'est pourquoi la <b>dominante (D)</b> — la quinte supérieure — et la <b>sous-dominante (S)</b> — la quinte inférieure — sont les fonctions harmoniques les plus importantes après la tonique.</p><p>À la même position, l'anneau extérieur et l'anneau intérieur partagent la même armure : ce sont des <b>tonalités relatives</b> (p. ex. {exMajor} et {exMinor}). En bas du cercle, le côté des dièses et celui des bémols se rejoignent dans les tonalités <b>enharmoniques</b> : les mêmes sons réels, deux écritures.</p>","tFortegnTitle":"Altérations : ordre et toutes les tonalités","tFortegn":"<p>Les dièses apparaissent toujours dans l'ordre <b>{sharpOrder}</b> (par quintes ascendantes). Les bémols suivent l'ordre inverse : <b>{flatOrder}</b> (par quintes descendantes).</p><p>Deux moyens mnémotechniques utiles : le <b>dernier dièse</b> se trouve un demi-ton sous la tonique du ton majeur (c'est la sensible). L'<b>avant-dernier bémol</b> <i>est</i> la tonalité majeure.</p>","thSig":"Armure","thDur":"Majeur","thMoll":"Mineur","thAccs":"Altérations","tParallellTitle":"Tonalité relative et tonalité homonyme","tParallell":"<p>La <b>tonalité relative</b> est la tonalité majeure ou mineure qui partage la même armure, les toniques étant à une tierce mineure l'une de l'autre : {exKey} ↔ {exRel}. (En allemand et dans les langues scandinaves, on l'appelle « Paralleltonart » — attention lors des traductions !)</p><p>La <b>tonalité homonyme</b> réunit le majeur et le mineur sur la <i>même tonique</i>, p. ex. {exVar1} et {exVar2} — même tonique, mais trois altérations d'écart.</p><p>Le mineur existe sous trois formes : <b>naturel</b> (comme le relatif majeur), <b>harmonique</b> (7e degré haussé — il apporte la sensible et une seconde augmentée caractéristique) et <b>mélodique</b> (6e et 7e degrés haussés en montant ; forme naturelle en descendant dans la tradition classique).</p>","tTranspTitle":"Transposition : {instr} et les autres instruments","tTranspTransposing":"<p>{instr} est un <b>instrument transpositeur</b> : un Do écrit sonne {soundsNote} — {interval} {direction}. Pour obtenir un son réel donné, on écrit donc {interval} {oppositeDirection}.</p>","tTranspNon":"<p>{instr} est un instrument <b>non transpositeur</b> : la note écrite et le son réel sont identiques. Le tableau ci-dessous montre néanmoins comment les instruments transpositeurs se situent par rapport aux sons réels.</p>","tTranspTable":"<p>Le même principe s'applique au reste de l'orchestre : la <b>clarinette en Si♭</b> (une seconde majeure au-dessus), le <b>cor en Fa</b> (une quinte juste au-dessus), le <b>saxophone alto en Mi♭</b> (une sixte majeure au-dessus), la <b>contrebasse</b> (une octave au-dessus). Règle pratique : le nom de l'instrument est le son réel produit lorsqu'il joue un Do écrit.</p>","thConcert":"Sons réels (concert)","thWritten":"Écrit pour {instr}","thWrittenSig":"Armure écrite","lower":"plus bas","higher":"plus haut","up":"vers le haut","down":"vers le bas","tIntonasjonTitle":"Intonation des cuivres à pistons","tIntonasjon":"<p>Les pistons abaissent la note de longueurs de tuyau fixes, mais les combinaisons deviennent trop courtes — certains doigtés sont donc systématiquement faux :</p><p><b>1·3 et 1·2·3 sont hauts.</b> Les {noteD4} (1·3) et {noteCiss4} (1·2·3) écrits sont les plus notoires : sortez la coulisse du 3e piston (env. 1–1,5 cm pour 1·3, 2–2,5 cm pour 1·2·3).</p><p><b>Le 5e harmonique est bas.</b> Le {noteE5} écrit, en doigté à vide, est environ 14 cents trop bas — corrigez avec les lèvres, ou utilisez 1·2 (6e harmonique) comme doigté de rechange.</p><p><b>On évite le 7e harmonique.</b> Le {noteB5} à vide est environ 31 cents trop bas et ne sert qu'aux effets de jazz (« shake ») — jouez-le avec le 1er piston.</p><p>Le 3e piston seul ≈ 1·2 et sert de doigté de rechange pour les trilles et l'intonation ({alt3list}).</p>","tGrepTitle":"Table complète des doigtés (chromatique, écrit {low}–{high})","tGrep":"<p>Tous les doigtés pour {instr}, de la note la plus grave ({low}) jusqu'au registre aigu. Les notes de la gamme choisie sont mises en évidence. Survolez une case pour voir les doigtés de rechange et les conseils d'intonation. Octaves numérotées selon la norme internationale : Do4 (C4) = le do central.</p>","tGrepPiccoloNote":"<p>Remarque : la trompette piccolo possède généralement un 4e piston (qui abaisse d'une quarte juste) et étend ainsi le registre vers le grave.</p>"},"footer":{"ruleTransposing":"{instr} : la note écrite sonne {interval} {direction}.","ruleNon":"{instr} : la hauteur écrite et la hauteur réelle sont identiques."}},"es":{"meta":{"lang":"es","name":"Español"},"ui":{"title":"El círculo de notas","subtitle":"Tonalidades, escalas, transporte y digitaciones para toda la orquesta. Elige idioma e instrumento, haz clic en el círculo de quintas — y verás las notas, la armadura y las digitaciones desde el nivel principiante hasta el profesional.","language":"Idioma","instrument":"Instrumento","view":"Vista","viewConcert":"Sonido real (Do)","viewWritten":"Escrito para {instr}","naming":"Nombres de las notas","namingNative":"Solfeo (Do · Re · Mi)","namingIntl":"Internacional (B · B♭ · F♯)","scale":"Escala","range":"Ámbito","oct1":"1 octava","oct2":"2 octavas","direction":"Dirección","dirUp":"Ascendente","dirUpDown":"Ascendente y descendente","tempo":"Tempo","bpm":"puls./min","play":"Reproducir la escala","stop":"Detener","playSounding":"Reproducir en sonido real (como {instr})","circleTitle":"El círculo de quintas","circleHint":"Anillo exterior: mayores. Anillo interior: menores. En el sentido del reloj = quinta ascendente (+1 sostenido); en sentido contrario = quinta descendente (+1 bemol).","dur":"Mayor","moll":"Menor","enhSwap":"Cambio enarmónico","hubOn":"en {instr}: {key}","hubSounds":"sonido real: {key}","looseAccs":"(alteraciones accidentales)","writtenKeyFor":"Tonalidad escrita para {instr}","concertKey":"Tonalidad real (concierto)","factSig":"Armadura","factRel":"Tonalidad relativa (misma armadura)","factVar":"Tonalidad homónima (misma tónica)","factDom":"Dominante (D)","factSub":"Subdominante (S)","factEnh":"Equivalente enarmónico","noSig":"sin alteraciones en la armadura","sharpOne":"sostenido","sharpMany":"sostenidos","flatOne":"bemol","flatMany":"bemoles","soundsAs":"Suena como <b>{key}</b> ({interval} {dir}).","writtenAs":"En {instr} esto se escribe como <b>{key}</b> ({interval} {dir}).","nonTransposing":"{instr} es no transpositor: la altura escrita y el sonido real coinciden.","staffHintWritten":"Las digitaciones corresponden a las notas escritas. Haz clic en una nota para escucharla.","staffHintConcert":"Las notas están en sonido real; las digitaciones muestran las que usa {instr}. Haz clic en una nota para escucharla.","staffHintNoFing":"Haz clic en una nota para escucharla.","stepsLabel":"Pasos","stepsLegend":"1 = tono, ½ = semitono","chromSteps":"solo semitonos (½ × 12 por octava)","keyboard":"Teclado","kbdWritten":"Las notas escritas de la escala — suenan {interval} más grave.","kbdWrittenUp":"Las notas escritas de la escala — suenan {interval} más aguda.","kbdConcert":"Las notas de la escala en sonido real.","kbdRoot":"La tónica aparece rellena.","levelsTitle":"De principiante a profesional","levelsHint":"Progresión habitual de las escalas. Haz clic en un nivel para ver recomendaciones, y en una tonalidad para cargarla.","theoryTitle":"Teoría y consulta","harm":"(arm.)","mel":"(mel.)","openValve":"al aire","fingering":"digitación","alt":"alt.","outOfRange":"fuera del registro habitual","forWritten":"para {note} escrito","octaveWord":"octava","written":"escrito","sounding":"sonido real","footerTuning":"Afinación: La4 = 440 Hz, temperamento igual.","octaves":"octava|octavas","and":"y","fingClause":" Las digitaciones bajo las notas corresponden a las notas escritas."},"intonation":{"i123":"Tiende a quedar alta — saca la bomba del tercer pistón","i13":"Tiende a quedar alta — usa la bomba del tercer pistón","i5th":"5.º armónico — puede quedar bajo con la digitación al aire","ihigh":"Registro agudo","ihigh12":"Registro agudo — la afinación depende sobre todo de los labios"},"intervals":{"qualities":{"perf":"justa","maj":"mayor","min":"menor"},"numbers":["primera","segunda","tercera","cuarta","quinta","sexta","séptima"],"octaveOne":"una octava","octaveTwo":"dos octavas","pattern":"una {num} {qual}","octavePlus":"{oct} y una {num} {qual}"},"keys":{"majorPattern":"{note} mayor","minorPattern":"{note} menor","minorLowercase":true},"scales":{"dur":"Mayor (jónico)","nmoll":"Menor natural (eólico)","durpent":"Pentatónica mayor","hmoll":"Menor armónica","mmoll":"Menor melódica (ascendente)","mollpent":"Pentatónica menor","blues":"Blues","krom":"Cromática","dorisk":"Dórico","frygisk":"Frigio","lydisk":"Lidio","mikso":"Mixolidio","lokrisk":"Locrio","heltone":"Escala de tonos enteros","dimhh":"Disminuida (tono–semitono)","dimhalv":"Disminuida (semitono–tono)","alterert":"Alterada (superlocrio)","lyddom":"Lidio dominante","frygdom":"Frigio dominante","bebopdom":"Bebop dominante","bebopdur":"Bebop mayor","arpdur":"Tríada mayor","arpmoll":"Tríada menor","arpdom7":"Séptima de dominante","arpmaj7":"Maj7","arpm7":"Menor 7","arpdim7":"Dim7","arpSuffix":"(arpegio)"},"scaleGroups":{"g1":"Nivel 1 · Escalas básicas","g2":"Nivel 2 · Variantes del menor y blues","g3":"Nivel 3 · Modos","g4":"Nivel 3–4 · Arpegios","g5":"Nivel 4 · Jazz y escalas simétricas"},"instrumentGroups":{"strings":"Cuerdas","woodwind":"Viento madera","brass":"Viento metal","other":"Teclado y percusión"},"instruments":{"violin":"Violín","viola":"Viola","cello":"Violonchelo","dbass":"Contrabajo","piccolo":"Flautín","flute":"Flauta","altflute":"Flauta alto en Sol","oboe":"Oboe","englhorn":"Corno inglés en Fa","klar_bb":"Clarinete en Si♭","klar_a":"Clarinete en La","klar_eb":"Clarinete en Mi♭","bassklar":"Clarinete bajo en Si♭","fagott":"Fagot","kontrafag":"Contrafagot","sopransax":"Saxofón soprano en Si♭","altsax":"Saxofón alto en Mi♭","tenorsax":"Saxofón tenor en Si♭","barisax":"Saxofón barítono en Mi♭","tromp_bb":"Trompeta en Si♭","tromp_c":"Trompeta en Do","tromp_d":"Trompeta en Re","tromp_eb":"Trompeta en Mi♭","picctromp":"Trompeta piccolo en Si♭","kornett_bb":"Corneta en Si♭","kornett_eb":"Corneta soprano en Mi♭","flygelhorn":"Fliscorno en Si♭","basstromp":"Trompeta baja en Si♭","horn_f":"Trompa en Fa","althorn":"Trompa alto en Mi♭","trombone":"Trombón","basstrombone":"Trombón bajo","eufonium_c":"Bombardino (clave de Fa)","eufonium_bb":"Bombardino/barítono en Si♭ (clave de Sol)","tuba":"Tuba (clave de Fa)","tuba_eb":"Tuba en Mi♭ (clave de Sol, brass band)","tuba_bb":"Tuba en Si♭ (clave de Sol, brass band)","piano":"Piano","klokkespill":"Glockenspiel","xylofon":"Xilófono","pauker":"Timbales"},"levels":[{"name":"Principiante","sub":"escuela de música, 1.º–2.º año","body":"Mayor en Do, Fa y Sol (escritas), la menor hacia el final. Una octava, tranquilo y regular (♩ ≈ 60–72). El sonido antes que la técnica.","tips":["Primero notas largas: 8 o más pulsos por nota con una columna de aire o un arco tranquilo y uniforme.","Canta la escala antes de tocarla — escucha la nota antes de producirla.","Usa un espejo y escucha: un sonido uniforme en cada nota importa más que el tempo."],"brassTips":["Primero notas largas: 8 o más pulsos en sol¹ y do¹ (do grave) con una columna de aire tranquila y abierta.","Ligaduras de labios sobre los armónicos al aire (do¹–sol¹–do²), sin pistones, antes de la escala.","Canta o haz «buzzing» de la escala en la boquilla antes de tocarla."]},{"name":"Intermedio","sub":"grados 3–5 / nivel medio","body":"Mayores hasta 3–4 alteraciones (las tonalidades de banda), menor en sus formas armónica y melódica, escala cromática, séptima de dominante. Corcheas a ♩ ≈ 80–100, tanto ligado como picado.","tips":["Practica la escala primero ligada y luego articulada al mismo tempo — siempre con metrónomo.","Practica también desde la nota más aguda hacia abajo — el descenso revela las irregularidades.","Planifica la respiración o el arco: la última nota tan plena como la primera."],"brassTips":["Ligaduras de labios diarias (Arban/Schlossberg) en todas las combinaciones de pistones.","Practica la escala primero ligada y luego picada al mismo tempo — siempre con metrónomo.","Planifica la respiración: como máximo una respiración por cada octava, y la última nota tan plena como la primera."]},{"name":"Avanzado","sub":"grado profesional / grados 6–8","body":"Las 12 tonalidades mayores y menores de memoria, arpegios (mayor, menor, dom7, dim7). Dos octavas donde el registro lo permita. Semicorcheas a ♩ ≈ 80–112, articulaciones mixtas.","tips":["Practica las escalas también en patrones de terceras y con variaciones rítmicas.","Las dos octavas nacen del control y la relajación — no de la fuerza.","Los modos: misma armadura, nuevo punto de partida — escucha la diferencia."],"brassTips":["Practica las escalas también desde la nota más aguda hacia abajo, y en patrones de terceras.","Las dos octavas nacen del apoyo del aire y la flexibilidad — no de la presión de la boquilla.","Los modos: misma armadura, nuevo punto de partida — escucha la diferencia."]},{"name":"Profesional","sub":"conservatorio superior / rutina diaria","body":"Todas las tonalidades en todos los modos, escalas de jazz y simétricas, estudios de patrones por todo el registro — en todas las articulaciones y dinámicas.","tips":["Rota: una tonalidad al día, pasando por todos los modos y arpegios.","Practica en todas las dinámicas — el pianissimo es el que más revela.","Transporta estudios: piensa en sonido real y escrito a la vez."],"brassTips":["El estudio n.º 2 de Clarke por todas las tonalidades — pianissimo y sin esfuerzo.","Rota: una tonalidad al día, pasando por todos los modos y arpegios.","Transporta estudios: piensa en sonido real y escrito a la vez."]}],"theory":{"tKvintTitle":"Cómo leer el círculo de quintas","tKvint":"<p>El círculo de quintas ordena todas las tonalidades según cuántas alteraciones tiene su armadura. Un paso <b>en el sentido del reloj</b> es una quinta justa ascendente — y un sostenido más (o un bemol menos). Un paso <b>en sentido contrario</b> es una quinta descendente — un bemol más.</p><p>Las tonalidades vecinas comparten seis de sus siete notas y por eso suenan estrechamente emparentadas. Esa es la razón de que la <b>dominante (D)</b> — la quinta superior — y la <b>subdominante (S)</b> — la quinta inferior — sean las funciones armónicas más importantes junto a la tónica.</p><p>El anillo exterior y el interior en la misma posición comparten armadura: son <b>tonalidades relativas</b> (p. ej. {exMajor} y {exMinor}). En la parte inferior del círculo, el lado de los sostenidos y el de los bemoles se encuentran en las tonalidades <b>enarmónicas</b>: las mismas notas reales, dos escrituras distintas.</p>","tFortegnTitle":"La armadura: orden de las alteraciones y todas las tonalidades","tFortegn":"<p>Los sostenidos aparecen siempre en el orden <b>{sharpOrder}</b> (por quintas ascendentes). Los bemoles aparecen en el orden inverso: <b>{flatOrder}</b> (por quintas descendentes).</p><p>Dos reglas útiles: el <b>último sostenido</b> está un semitono por debajo de la tónica de la tonalidad mayor (es la sensible). El <b>penúltimo bemol</b> <i>es</i> la tonalidad mayor.</p>","thSig":"Armadura","thDur":"Mayor","thMoll":"Menor","thAccs":"Alteraciones","tParallellTitle":"Tonalidad relativa y tonalidad homónima","tParallell":"<p>En la teoría española, la <b>tonalidad relativa</b> es la pareja de mayor y menor que comparte armadura, con las tónicas a distancia de tercera menor: {exKey} ↔ {exRel}. (En la teoría alemana y nórdica se la llama «tonalidad paralela» — ¡cuidado con las traducciones!)</p><p>La <b>tonalidad homónima</b> es la pareja de mayor y menor sobre <i>la misma tónica</i>, p. ej. {exVar1} y {exVar2} — misma tónica, pero tres alteraciones de diferencia.</p><p>El modo menor existe en tres formas: <b>natural</b> (como su relativo mayor), <b>armónica</b> (7.º grado elevado — aporta la sensible y una característica segunda aumentada) y <b>melódica</b> (6.º y 7.º grados elevados al ascender; forma natural al descender en la tradición clásica).</p>","tTranspTitle":"Transporte: {instr} y otros instrumentos","tTranspTransposing":"<p>{instr} es un <b>instrumento transpositor</b>: un Do escrito suena como {soundsNote} — {interval} {direction}. Para obtener el sonido real deseado se escribe, por tanto, {interval} {oppositeDirection}.</p>","tTranspNon":"<p>{instr} es <b>no transpositor</b>: la nota escrita y el sonido real coinciden. Aun así, la tabla siguiente muestra cómo se relacionan los instrumentos transpositores con la altura real.</p>","tTranspTable":"<p>El mismo principio vale para el resto de la orquesta: el <b>clarinete en Si♭</b> (una segunda mayor ascendente), la <b>trompa en Fa</b> (una quinta justa ascendente), el <b>saxofón alto en Mi♭</b> (una sexta mayor ascendente), el <b>contrabajo</b> (una octava ascendente). Regla práctica: el nombre del instrumento es el sonido real que produce cuando toca un Do escrito.</p>","thConcert":"Sonido real (concierto)","thWritten":"Escrito para {instr}","thWrittenSig":"Armadura escrita","lower":"más grave","higher":"más aguda","up":"ascendente","down":"descendente","tIntonasjonTitle":"La afinación en los metales con pistones","tIntonasjon":"<p>Los pistones bajan la nota añadiendo tubos de longitud fija, pero las combinaciones quedan demasiado cortas — por eso algunas digitaciones desafinan de forma sistemática:</p><p><b>1·3 y 1·2·3 quedan altas.</b> El {noteD4} escrito (1·3) y el {noteCiss4} (1·2·3) son los casos célebres: saca la bomba del tercer pistón (aprox. 1–1,5 cm para 1·3, 2–2,5 cm para 1·2·3).</p><p><b>El 5.º armónico queda bajo.</b> El {noteE5} escrito con la digitación al aire está ~14 cents bajo — corrige con los labios, o usa 1·2 (6.º armónico) como digitación alternativa.</p><p><b>El 7.º armónico se evita.</b> El {noteB5} al aire está ~31 cents bajo y solo se usa para efectos de jazz («shake») — tócalo con el primer pistón.</p><p>El tercer pistón solo ≈ 1·2 y se usa como digitación alternativa para trinos y afinación ({alt3list}).</p>","tGrepTitle":"Tabla de digitaciones completa (cromática, escrito {low}–{high})","tGrep":"<p>Todas las digitaciones de {instr}, desde la nota más grave ({low}) hasta el registro agudo. Las notas que pertenecen a la escala elegida aparecen resaltadas. Pasa el puntero sobre una celda para ver digitaciones alternativas y consejos de afinación. Numeración de octavas según el estándar internacional: Do4 = do central.</p>","tGrepPiccoloNote":"<p>Nota: la trompeta piccolo suele tener un cuarto pistón (baja una cuarta justa) que amplía el registro hacia el grave.</p>"},"footer":{"ruleTransposing":"{instr}: la nota escrita suena {interval} {direction}.","ruleNon":"{instr}: la altura escrita y el sonido real coinciden."}},"en":{"meta":{"lang":"en","name":"English"},"ui":{"title":"The Note Circle","subtitle":"Keys, scales, transposition and fingerings for the whole orchestra. Choose a language and instrument, click the circle of fifths — and see notes, key signatures and fingerings from beginner to professional level.","language":"Language","instrument":"Instrument","view":"View","viewConcert":"Concert pitch (C)","viewWritten":"Written for {instr}","naming":"Note names","namingNative":"English (B · B♭ · F♯)","namingIntl":"International (B · B♭ · F♯)","scale":"Scale","range":"Range","oct1":"1 octave","oct2":"2 octaves","direction":"Direction","dirUp":"Up","dirUpDown":"Up and down","tempo":"Tempo","bpm":"beats/min","play":"Play the scale","stop":"Stop","playSounding":"Play at concert pitch (as {instr})","circleTitle":"The Circle of Fifths","circleHint":"Outer ring: major. Inner ring: minor. Clockwise = up a fifth (+1 sharp), counterclockwise = down a fifth (+1 flat).","dur":"Major","moll":"Minor","enhSwap":"Enharmonic swap","hubOn":"on {instr}: {key}","hubSounds":"sounding: {key}","looseAccs":"(accidentals)","writtenKeyFor":"Written key for {instr}","concertKey":"Concert key (sounding)","factSig":"Key signature","factRel":"Relative key (same signature)","factVar":"Parallel key (same tonic)","factDom":"Dominant (D)","factSub":"Subdominant (S)","factEnh":"Enharmonic equivalent","noSig":"no sharps or flats","sharpOne":"sharp","sharpMany":"sharps","flatOne":"flat","flatMany":"flats","soundsAs":"Sounds as <b>{key}</b> ({interval} {dir}).","writtenAs":"On {instr} this is written as <b>{key}</b> ({interval} {dir}).","nonTransposing":"{instr} is non-transposing: written and sounding pitch are the same.","staffHintWritten":"The fingerings apply to the written notes. Click a note to hear it.","staffHintConcert":"The notes are at concert pitch; the fingerings show what {instr} uses. Click a note to hear it.","staffHintNoFing":"Click a note to hear it.","stepsLabel":"Steps","stepsLegend":"1 = whole step, ½ = half step","chromSteps":"half steps only (½ × 12 per octave)","keyboard":"Keyboard","kbdWritten":"The scale's written pitches — sounding {interval} lower.","kbdWrittenUp":"The scale's written pitches — sounding {interval} higher.","kbdConcert":"The scale's sounding pitches.","kbdRoot":"The root is filled in.","levelsTitle":"From beginner to professional","levelsHint":"A typical progression for scales. Click a level for recommendations, and click a key to load it.","theoryTitle":"Theory and reference","harm":"(harm.)","mel":"(mel.)","openValve":"open","fingering":"fingering","alt":"alt.","outOfRange":"outside the normal range","forWritten":"for written {note}","octaveWord":"octave","written":"written","sounding":"sounding","footerTuning":"Tuning: A4 = 440 Hz, equal temperament.","octaves":"octave|octaves","and":"and","fingClause":" The fingerings below the notes apply to the written pitches."},"intonation":{"i123":"Tends to run sharp — extend the 3rd-valve slide","i13":"Tends to run sharp — use the 3rd-valve slide","i5th":"5th partial — can sit flat with the open fingering","ihigh":"High register","ihigh12":"High register — intonation is governed mostly by the lips"},"intervals":{"qualities":{"perf":"perfect","maj":"major","min":"minor"},"numbers":["unison","second","third","fourth","fifth","sixth","seventh"],"octaveOne":"an octave","octaveTwo":"two octaves","pattern":"a {qual} {num}","octavePlus":"{oct} and a {qual} {num}"},"keys":{"majorPattern":"{note} major","minorPattern":"{note} minor","minorLowercase":false},"scales":{"dur":"Major (Ionian)","nmoll":"Natural minor (Aeolian)","durpent":"Major pentatonic","hmoll":"Harmonic minor","mmoll":"Melodic minor (ascending)","mollpent":"Minor pentatonic","blues":"Blues","krom":"Chromatic","dorisk":"Dorian","frygisk":"Phrygian","lydisk":"Lydian","mikso":"Mixolydian","lokrisk":"Locrian","heltone":"Whole-tone scale","dimhh":"Diminished (whole–half)","dimhalv":"Diminished (half–whole)","alterert":"Altered (super-Locrian)","lyddom":"Lydian dominant","frygdom":"Phrygian dominant","bebopdom":"Bebop dominant","bebopdur":"Bebop major","arpdur":"Major triad","arpmoll":"Minor triad","arpdom7":"Dominant seventh","arpmaj7":"Maj7","arpm7":"Minor 7","arpdim7":"Dim7","arpSuffix":"(arpeggio)"},"scaleGroups":{"g1":"Level 1 · Basic scales","g2":"Level 2 · Minor forms and blues","g3":"Level 3 · Modes","g4":"Level 3–4 · Arpeggios","g5":"Level 4 · Jazz and symmetric scales"},"instrumentGroups":{"strings":"Strings","woodwind":"Woodwinds","brass":"Brass","other":"Keyboard and percussion"},"instruments":{"violin":"Violin","viola":"Viola","cello":"Cello","dbass":"Double bass","piccolo":"Piccolo","flute":"Flute","altflute":"Alto flute in G","oboe":"Oboe","englhorn":"English horn in F","klar_bb":"Clarinet in B♭","klar_a":"Clarinet in A","klar_eb":"Clarinet in E♭","bassklar":"Bass clarinet in B♭","fagott":"Bassoon","kontrafag":"Contrabassoon","sopransax":"Soprano saxophone in B♭","altsax":"Alto saxophone in E♭","tenorsax":"Tenor saxophone in B♭","barisax":"Baritone saxophone in E♭","tromp_bb":"Trumpet in B♭","tromp_c":"Trumpet in C","tromp_d":"Trumpet in D","tromp_eb":"Trumpet in E♭","picctromp":"Piccolo trumpet in B♭","kornett_bb":"Cornet in B♭","kornett_eb":"Soprano cornet in E♭","flygelhorn":"Flugelhorn in B♭","basstromp":"Bass trumpet in B♭","horn_f":"French horn in F","althorn":"Tenor horn in E♭","trombone":"Trombone","basstrombone":"Bass trombone","eufonium_c":"Euphonium (bass clef)","eufonium_bb":"Euphonium/baritone in B♭ (treble clef)","tuba":"Tuba (bass clef)","tuba_eb":"Tuba in E♭ (treble clef, brass band)","tuba_bb":"Tuba in B♭ (treble clef, brass band)","piano":"Piano","klokkespill":"Glockenspiel","xylofon":"Xylophone","pauker":"Timpani"},"levels":[{"name":"Beginner","sub":"community music school, years 1–2","body":"Major in C, F and G (written), A minor toward the end. One octave, calm and even (♩ ≈ 60–72). Tone before technique.","tips":["Long tones first: 8+ beats per note with a calm, steady airstream or bow.","Sing the scale before you play it — hear the note before you make it.","Use a mirror and listen: an even tone on every note matters more than tempo."],"brassTips":["Long tones first: 8+ beats on g¹ and c¹ (low C) with a calm, open airstream.","Lip slurs on the open partials (c¹–g¹–c²) without valves before the scale.","Sing or “buzz” the scale on the mouthpiece before you play it."]},{"name":"Intermediate","sub":"grades 3–5 / intermediate level","body":"Major up to 3–4 sharps or flats (the band keys), minor in harmonic and melodic form, the chromatic scale, the dominant seventh. Eighth notes ♩ ≈ 80–100, both slurred and articulated.","tips":["Practice the scale slurred first, then articulated at the same tempo — always with a metronome.","Practice from the top down as well — the descent reveals unevenness.","Plan your breathing/bowing: the last note as full as the first."],"brassTips":["Daily lip slurs (Arban/Schlossberg) on all valve combinations.","Practice the scale slurred first, then tongued at the same tempo — always with a metronome.","Plan your breathing: at most one breath per octave run, and the last note as full as the first."]},{"name":"Advanced","sub":"pre-college music program / grades 6–8","body":"All 12 major and minor keys from memory, arpeggios (major, minor, dom7, dim7). Two octaves where the range allows. Sixteenth notes ♩ ≈ 80–112, mixed articulations.","tips":["Practice the scales in patterns of thirds and with rhythmic variations as well.","Two octaves come from control and relaxation — not force.","The modes: same key signature, new starting point — hear the difference."],"brassTips":["Practice the scales from the top down too, and in patterns of thirds.","Two octaves come from air support and flexibility — not mouthpiece pressure.","The modes: same key signature, new starting point — hear the difference."]},{"name":"Professional","sub":"conservatory / daily routine","body":"All keys in all modes, jazz and symmetric scales, pattern studies through the entire range — in all articulations and dynamics.","tips":["Rotate: one key per day, through all modes and arpeggios.","Practice in all dynamics — pianissimo reveals the most.","Transpose etudes: think concert and written pitch at the same time."],"brassTips":["Clarke study no. 2 through all keys — pianissimo and effortless.","Rotate: one key per day, through all modes and arpeggios.","Transpose etudes: think concert and written pitch at the same time."]}],"theory":{"tKvintTitle":"How to read the circle of fifths","tKvint":"<p>The circle of fifths arranges all keys by how many sharps or flats are in their key signature. One step <b>clockwise</b> is a perfect fifth up — and one more sharp (or one flat fewer). One step <b>counterclockwise</b> is a fifth down — one more flat.</p><p>Neighboring keys share six of their seven notes and therefore sound closely related. That is why the <b>dominant (D)</b> — the fifth above — and the <b>subdominant (S)</b> — the fifth below — are the most important chord functions next to the tonic.</p><p>The outer and inner ring at the same position share a key signature: these are <b>relative keys</b> (e.g. {exMajor} and {exMinor}). At the bottom of the circle the sharp and flat sides meet in the <b>enharmonic</b> keys: the same sounding pitches, two ways of writing them.</p>","tFortegnTitle":"Key signatures: order and all keys","tFortegn":"<p>The sharps always appear in the order <b>{sharpOrder}</b> (rising in fifths). The flats appear in the opposite order: <b>{flatOrder}</b> (falling in fifths).</p><p>Two useful rules of thumb: the <b>last sharp</b> is a half step below the tonic of the major key (the leading tone). The <b>second-to-last flat</b> <i>is</i> the major key.</p>","thSig":"Key signature","thDur":"Major","thMoll":"Minor","thAccs":"Accidentals","tParallellTitle":"Relative key and parallel key","tParallell":"<p>In English theory, the <b>relative key</b> is the major or minor key that shares the same key signature, with tonics a minor third apart: {exKey} ↔ {exRel}. (Beware in translation: German and Scandinavian theory calls this the “parallel key” — a false friend!)</p><p>The <b>parallel key</b> is major and minor on the <i>same tonic</i>, e.g. {exVar1} and {exVar2} — same tonic, but three accidentals apart. (In Germanic terminology this is the “variant key.”)</p><p>Minor comes in three forms: <b>natural</b> (as its relative major), <b>harmonic</b> (raised 7th degree — providing a leading tone and a characteristic augmented second) and <b>melodic</b> (raised 6th and 7th degrees ascending; the natural form descending in the classical tradition).</p>","tTranspTitle":"Transposition: {instr} and other instruments","tTranspTransposing":"<p>{instr} is a <b>transposing instrument</b>: a written C sounds as {soundsNote} — {interval} {direction}. To obtain a desired sounding pitch, you therefore write {interval} {oppositeDirection}.</p>","tTranspNon":"<p>{instr} is <b>non-transposing</b>: the written note and the sounding pitch are the same. The table below still shows how transposing instruments relate to concert pitch.</p>","tTranspTable":"<p>The same principle applies to the rest of the orchestra: <b>clarinet in B♭</b> (a major second up), <b>French horn in F</b> (a perfect fifth up), <b>alto saxophone in E♭</b> (a major sixth up), <b>double bass</b> (an octave up). Rule of thumb: the instrument's name is the pitch that sounds when it plays a written C.</p>","thConcert":"Concert pitch (sounding)","thWritten":"Written for {instr}","thWrittenSig":"Written key signature","lower":"lower","higher":"higher","up":"up","down":"down","tIntonasjonTitle":"Intonation on valved brass","tIntonasjon":"<p>The valves lower the pitch by fixed lengths of tubing, but combinations come out too short — so some fingerings are systematically out of tune:</p><p><b>1·3 and 1·2·3 are sharp.</b> Written {noteD4} (1·3) and {noteCiss4} (1·2·3) are the notorious ones: extend the 3rd-valve slide (about 1–1.5 cm for 1·3, 2–2.5 cm for 1·2·3).</p><p><b>The 5th partial is flat.</b> Written {noteE5} with the open fingering sits ~14 cents flat — adjust with the lips, or use 1·2 (6th partial) as an alternate fingering.</p><p><b>The 7th partial is avoided.</b> Open {noteB5} sits ~31 cents flat and is used only for jazz effects (the “shake”) — play it with the 1st valve.</p><p>The 3rd valve alone ≈ 1·2 and serves as an alternate fingering for trills and intonation ({alt3list}).</p>","tGrepTitle":"Full fingering chart (chromatic, written {low}–{high})","tGrep":"<p>All fingerings for {instr}, from the lowest note ({low}) up into the high register. Notes belonging to the selected scale are highlighted. Hover over a cell for alternate fingerings and intonation tips. Octave numbers follow the international standard: C4 = middle C.</p>","tGrepPiccoloNote":"<p>Note: the piccolo trumpet usually has a 4th valve (lowering the pitch a perfect fourth) that extends the range downward.</p>"},"footer":{"ruleTransposing":"{instr}: a written note sounds {interval} {direction}.","ruleNon":"{instr}: written and sounding pitch are the same."}}};
+const LANG_ORDER = ['no', 'sv', 'da', 'de', 'fr', 'es', 'en'];
+const NOTE_SYSTEMS = { no: 'gss', sv: 'gss', da: 'gs', de: 'gs', fr: 'sf_fr', es: 'sf_es', en: 'letters' };
+const SCALE_NAME_LOWER = { no: 1, sv: 1, da: 1, fr: 1, es: 1 };
+
+function T(path, tokens) {
+  const dig = (lang) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), I18N[lang]);
+  let v = dig(state.lang);
+  if (v == null) v = dig('no');
+  if (typeof v === 'string' && tokens) v = fmt(v, tokens);
+  return v;
+}
+function fmt(s, tokens) {
+  return s.replace(/\{(\w+)\}/g, (m, k) => (tokens && k in tokens) ? tokens[k] : m);
+}
+
+// Notenavn i språkets egen tradisjon
+function nativeName(letter, alt, sys) {
+  if (sys === 'letters') return intlName(letter, alt);
+  if (sys === 'gss') return norName(letter, alt);
+  if (sys === 'gs') { // tysk/dansk enkeltkonsonant
+    if (letter === 'B') {
+      if (alt === 0) return 'H';
+      if (alt === 1) return 'His';
+      if (alt === 2) return 'Hisis';
+      if (alt === -1) return 'B';
+      return 'Heses';
+    }
+    if (alt > 0) return letter + 'is'.repeat(alt);
+    if (alt === 0) return letter;
+    const single = { C: 'Ces', D: 'Des', E: 'Es', F: 'Fes', G: 'Ges', A: 'As' }[letter];
+    if (alt === -1) return single;
+    return { E: 'Eses', A: 'Asas' }[letter] || (single + 'es');
+  }
+  const base = sys === 'sf_fr' ? ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si']
+                               : ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Si'];
+  return base[LETTERS.indexOf(letter)] + accSymbol(alt);
+}
+function dispNote(t, namingOverride) {
+  const naming = namingOverride || state.naming;
+  if (naming === 'intl') return intlName(t.letter, t.alt);
+  return nativeName(t.letter, t.alt, NOTE_SYSTEMS[state.lang] || 'letters');
+}
+function lcFirst(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
+function keyLabel(t, quality) {
+  const n = dispNote(t);
+  if (quality === 'dur') return fmt(T('keys.majorPattern'), { note: n });
+  const note = T('keys.minorLowercase') ? lcFirst(n) : n;
+  return fmt(T('keys.minorPattern'), { note });
+}
+function scaleName(id) {
+  const base = T('scales.' + id);
+  return SCALES[id].arp ? base + ' ' + T('scales.arpSuffix') : base;
+}
+function scaleTonicName(t, scaleId) {
+  const n = dispNote(t);
+  return (T('keys.minorLowercase') && SCALES[scaleId].ring === 'min') ? lcFirst(n) : n;
+}
+function scaleHeading(t, scaleId, quality) {
+  if (scaleId === 'dur' || scaleId === 'nmoll') return keyLabel(t, quality);
+  let nm = scaleName(scaleId);
+  if (SCALE_NAME_LOWER[state.lang]) nm = nm.toLowerCase();
+  return scaleTonicName(t, scaleId) + ' ' + nm;
+}
+function fortegnText(f) {
+  if (f === 0) return T('ui.noSig');
+  const n = Math.abs(f);
+  if (f > 0) return n + ' ' + T(n === 1 ? 'ui.sharpOne' : 'ui.sharpMany');
+  return n + ' ' + T(n === 1 ? 'ui.flatOne' : 'ui.flatMany');
+}
+// «en stor sekund», «en oktav og en ren kvint», «to oktaver» ...
+function intervalName(letters, semis) {
+  const p = intervalParts(letters, semis);
+  const iv = T('intervals');
+  if (p.num === 0 && p.octs > 0) return p.octs === 1 ? iv.octaveOne : iv.octaveTwo;
+  const core = fmt(iv.pattern, { qual: iv.qualities[p.qual], num: iv.numbers[p.num] });
+  if (p.octs === 0) return core;
+  const oct = p.octs === 1 ? iv.octaveOne : iv.octaveTwo;
+  return fmt(iv.octavePlus, { oct, qual: iv.qualities[p.qual], num: iv.numbers[p.num] });
+}
+function instrName(id) { return T('instruments.' + id) || id; }
+
+/* ---------------- Flagg (inline SVG, 24x16) ---------------- */
+function flagSvg(code) {
+  const r = (x, y, w, h, f) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}"/>`;
+  let inner = '';
+  if (code === 'no') inner = r(0,0,24,16,'#BA0C2F') + r(6,0,4,16,'#fff') + r(0,6,24,4,'#fff') + r(7,0,2,16,'#00205B') + r(0,7,24,2,'#00205B');
+  if (code === 'sv') inner = r(0,0,24,16,'#006AA7') + r(7,0,3,16,'#FECC02') + r(0,6.5,24,3,'#FECC02');
+  if (code === 'da') inner = r(0,0,24,16,'#C8102E') + r(7,0,3,16,'#fff') + r(0,6.5,24,3,'#fff');
+  if (code === 'de') inner = r(0,0,24,5.33,'#000') + r(0,5.33,24,5.34,'#DD0000') + r(0,10.67,24,5.33,'#FFCE00');
+  if (code === 'fr') inner = r(0,0,8,16,'#002395') + r(8,0,8,16,'#fff') + r(16,0,8,16,'#ED2939');
+  if (code === 'es') inner = r(0,0,24,16,'#AA151B') + r(0,4,24,8,'#F1BF00');
+  if (code === 'en') inner = r(0,0,24,16,'#012169')
+    + `<path d="M0 0 L24 16 M24 0 L0 16" stroke="#fff" stroke-width="3.2"/>`
+    + `<path d="M0 0 L24 16 M24 0 L0 16" stroke="#C8102E" stroke-width="1.4"/>`
+    + r(10,0,4,16,'#fff') + r(0,6,24,4,'#fff') + r(11,0,2,16,'#C8102E') + r(0,7,24,2,'#C8102E');
+  return `<svg width="24" height="16" viewBox="0 0 24 16" aria-hidden="true">${inner}</svg>`;
+}
+
+/* ================================================================
+   SVG-renderere
+   ================================================================ */
+const SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function txt(parent, x, y, str, attrs) {
+  const t = el('text', Object.assign({ x, y }, attrs), parent);
+  t.textContent = str;
+  return t;
+}
+function cubicPts(p0, p1, p2, p3, n) {
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, m = 1 - t;
+    pts.push([
+      m*m*m*p0[0] + 3*m*m*t*p1[0] + 3*m*t*t*p2[0] + t*t*t*p3[0],
+      m*m*m*p0[1] + 3*m*m*t*p1[1] + 3*m*t*t*p2[1] + t*t*t*p3[1],
+    ]);
+  }
+  return pts;
+}
+function polyPath(pts) {
+  return 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L');
+}
+function strokeGroup(parent) {
+  return el('g', { fill: 'none', stroke: 'var(--staff-ink)', 'stroke-linecap': 'round' }, parent);
+}
+// G-nøkkel. Origo = G4-linja.
+function drawTrebleClef(parent, x, yAnchor, sp) {
+  const S = p => p.map(q => [x + q[0]*sp, yAnchor + q[1]*sp]);
+  const apex = [-0.05, -4.85];
+  const spine = S([].concat(
+    cubicPts(apex, [0.10,-3.2], [0.16,-1.0], [0.14,0.6], 22),
+    cubicPts([0.14,0.6], [0.13,1.4], [0.14,1.9], [0.10,2.2], 8),
+    cubicPts([0.10,2.2], [0.04,2.62], [-0.25,2.72], [-0.46,2.48], 8)));
+  const loop = S([].concat(
+    cubicPts(apex, [0.50,-4.55], [0.78,-3.75], [0.72,-2.95], 14),
+    cubicPts([0.72,-2.95], [0.66,-2.15], [0.40,-1.62], [0.08,-1.28], 14)));
+  const C = [0.0, 0.06], start = [0.08, -1.28];
+  const a0 = Math.atan2(start[1]-C[1], start[0]-C[0]);
+  const rIn = Math.hypot(start[0]-C[0], start[1]-C[1]);
+  const total = 1.58 * 2 * Math.PI, rEnd = 0.30;
+  const bowl = [];
+  for (let i = 0; i <= 90; i++) {
+    const t = i / 90, a = a0 - total * t, r = rIn + (rEnd - rIn) * Math.pow(t, 0.8);
+    bowl.push([x + (C[0] + 1.07*r*Math.cos(a))*sp, yAnchor + (C[1] + r*Math.sin(a))*sp]);
+  }
+  const g = strokeGroup(parent);
+  el('path', { d: polyPath(spine), 'stroke-width': (0.185*sp).toFixed(1) }, g);
+  el('path', { d: polyPath(loop),  'stroke-width': (0.24*sp).toFixed(1) }, g);
+  el('path', { d: polyPath(bowl),  'stroke-width': (0.27*sp).toFixed(1) }, g);
+  el('circle', { cx: (x-0.52*sp).toFixed(1), cy: (yAnchor+2.38*sp).toFixed(1), r: (0.29*sp).toFixed(1), fill: 'var(--staff-ink)', stroke: 'none' }, g);
+}
+// F-nøkkel. Origo = F3-linja.
+function drawBassClef(parent, x, yAnchor, sp) {
+  const S = p => p.map(q => [x + q[0]*sp, yAnchor + q[1]*sp]);
+  const body = S([].concat(
+    cubicPts([-0.85,-0.35], [-0.5,-1.15], [0.5,-1.25], [0.95,-0.55], 16),
+    cubicPts([0.95,-0.55], [1.35,0.1], [1.05,1.2], [0.2,2.0], 18),
+    cubicPts([0.2,2.0], [-0.2,2.35], [-0.6,2.55], [-1.0,2.6], 10)));
+  const g = strokeGroup(parent);
+  el('path', { d: polyPath(body), 'stroke-width': (0.30*sp).toFixed(1) }, g);
+  el('circle', { cx: x-0.85*sp, cy: yAnchor, r: 0.40*sp, fill: 'var(--staff-ink)', stroke: 'none' }, g);
+  el('circle', { cx: x+1.75*sp, cy: yAnchor-0.5*sp, r: 0.17*sp, fill: 'var(--staff-ink)', stroke: 'none' }, g);
+  el('circle', { cx: x+1.75*sp, cy: yAnchor+0.5*sp, r: 0.17*sp, fill: 'var(--staff-ink)', stroke: 'none' }, g);
+}
+// C-nøkkel. Origo = midtlinja.
+function drawAltoClef(parent, x, yAnchor, sp) {
+  const S = p => p.map(q => [x + q[0]*sp, yAnchor + q[1]*sp]);
+  const g = strokeGroup(parent);
+  el('path', { d: polyPath(S([[-1.15,-2.0],[-1.15,2.0]])), 'stroke-width': (0.42*sp).toFixed(1) }, g);
+  el('path', { d: polyPath(S([[-0.62,-2.0],[-0.62,2.0]])), 'stroke-width': (0.12*sp).toFixed(1) }, g);
+  const up = [].concat(
+    cubicPts([-0.55,-2.0], [0.3,-2.25], [0.95,-1.9], [0.95,-1.1], 14),
+    cubicPts([0.95,-1.1], [0.95,-0.3], [0.25,-0.05], [-0.35,-0.08], 12));
+  const dn = up.map(p => [p[0], -p[1]]).reverse();
+  el('path', { d: polyPath(S(up)), 'stroke-width': (0.26*sp).toFixed(1) }, g);
+  el('path', { d: polyPath(S(dn)), 'stroke-width': (0.26*sp).toFixed(1) }, g);
+  el('circle', { cx: x+0.72*sp, cy: yAnchor-1.35*sp, r: 0.20*sp, fill: 'var(--staff-ink)', stroke: 'none' }, g);
+  el('circle', { cx: x+0.72*sp, cy: yAnchor+1.35*sp, r: 0.20*sp, fill: 'var(--staff-ink)', stroke: 'none' }, g);
+}
+const CLEF_DRAW = { treble: drawTrebleClef, alto: drawAltoClef, bass: drawBassClef };
+
+// Fortegn-glyf (manuelt optisk justert)
+function drawAcc(parent, x, y, alt, fontSize, fill) {
+  const attrs = { 'text-anchor': 'middle', 'font-size': fontSize, fill: fill || 'var(--staff-ink)', 'font-family': 'system-ui, sans-serif' };
+  if (alt === 2) { const t = txt(parent, x, y + fontSize*0.34, '×', attrs); t.setAttribute('font-weight', '700'); return t; }
+  const sym = alt === 1 ? '♯' : alt === -1 ? '♭' : alt === -2 ? '♭♭' : '♮';
+  const dy = (alt === -1 || alt === -2) ? fontSize*0.22 : fontSize*0.34;
+  return txt(parent, x, y + dy, sym, attrs);
+}
+// Ventilgrep: tre sirkler, trykket = fylt
+function drawValves(parent, cx, cy, combo, r, gap) {
+  r = r || 6; gap = gap || 17;
+  const g = el('g', {}, parent);
+  for (let v = 1; v <= 3; v++) {
+    const pressed = combo !== '0' && combo.indexOf(String(v)) >= 0;
+    const x = cx + (v - 2) * gap;
+    el('circle', { cx: x, cy, r, fill: pressed ? 'var(--brass)' : 'none', stroke: pressed ? 'var(--brass)' : 'var(--line-strong)', 'stroke-width': 1.6 }, g);
+    txt(g, x, cy + r + 11, String(v), { 'text-anchor': 'middle', 'font-size': 9, fill: 'var(--muted)', 'font-family': 'system-ui, sans-serif' });
+  }
+  return g;
+}
+function comboText(combo) { return combo === '0' ? T('ui.openValve') : combo.split('').join('·'); }
+
+/* ---------------- Notesystemet ---------------- */
+const SP = 12;
+function renderStaff(state, built, writtenBuilt, clefName) {
+  const svg = document.getElementById('staffSvg');
+  svg.innerHTML = '';
+  const ins = INSTR_BY_ID[state.instrId];
+  clefName = clefName || ins.clef;
+  const clef = CLEFS[clefName];
+  const bottomDi = clef.bottomDi;
+  const notes = built.notes, sigF = built.sigF, degrees = built.degrees;
+  const sig = sigList(sigF).map(a => ({ letter: a.letter, alt: a.alt, di: a.di - clef.sigShift }));
+  const seq = playbackOrder(state, notes.length);
+  const shown = seq.map(i => ({ n: notes[i], deg: degrees[i], idx: i }));
+  const hasFing = ins.fing === 'brass3';
+
+  const NW = 56;
+  const x0 = 18;
+  const clefX = x0 + (clefName === 'treble' ? 18 : 22);
+  const sigX = x0 + 48;
+  const notesX = sigX + sig.length * 13 + 34;
+  const width = notesX + shown.length * NW + 10;
+
+  let minDi = 99, maxDi = -99;
+  for (const s of shown) { const d = diaIndex(s.n); if (d < minDi) minDi = d; if (d > maxDi) maxDi = d; }
+  const clefTopSp = clefName === 'treble' ? 4.85 : (clefName === 'bass' ? 1.4 : 2.1);
+  const clefBotSp = clefName === 'treble' ? 2.72 : (clefName === 'bass' ? 2.7 : 2.1);
+  const anchorSp = clef.anchorLine; // ankerlinje regnet fra nederste linje
+  // staffBottom (nederste linje) velges så høyeste note, faste fortegn og nøkkel får plass
+  const sigTopDi = sigF ? Math.max(...sig.map(a => a.di)) : bottomDi + 8;
+  const staffBottom = Math.ceil(Math.max(
+    14 + (maxDi - bottomDi) * SP/2,
+    16 + (sigTopDi - bottomDi) * SP/2,
+    12 + (anchorSp + clefTopSp) * SP,
+    4 * SP + 14
+  ));
+  const yTop = staffBottom - 4*SP;
+  const yAnchor = staffBottom - anchorSp*SP;
+  const lowest = Math.max(
+    staffBottom,
+    staffBottom + (bottomDi - minDi) * SP/2,
+    yAnchor + clefBotSp*SP
+  );
+  const nameY = lowest + 24;
+  const degY = nameY + 17;
+  const valveY = degY + 22;
+  const height = (hasFing ? valveY + 26 : degY + 14);
+
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute('width', width);
+  svg.setAttribute('height', height);
+
+  for (let s = 0; s <= 4; s++)
+    el('line', { x1: x0 - 6, y1: yTop + s*SP, x2: width - 8, y2: yTop + s*SP, stroke: 'var(--staff-ink)', 'stroke-width': 1.1, opacity: 0.85 }, svg);
+
+  CLEF_DRAW[clefName](svg, clefX, yAnchor, SP);
+
+  sig.forEach((a, i) => {
+    const y = staffBottom - (a.di - bottomDi) * SP/2;
+    drawAcc(svg, sigX + i * 13, y, a.alt, 21);
+  });
+
+  const sigM = sigMap(sigF);
+  const seen = {};
+  const noteRefs = [];
+  const ledgerLo = bottomDi - 2, ledgerHi = bottomDi + 10;
+  shown.forEach((s, i) => {
+    const n = s.n;
+    const x = notesX + i * NW;
+    const di = diaIndex(n);
+    const y = staffBottom - (di - bottomDi) * SP/2;
+    const key = n.letter + n.octave;
+    const expected = (key in seen) ? seen[key] : sigM[n.letter];
+    const needAcc = n.alt !== expected;
+    if (needAcc) seen[key] = n.alt;
+
+    const g = el('g', { class: 'staffnote', 'data-i': i, tabindex: '0', role: 'button' }, svg);
+    const title = el('title', {}, g);
+
+    if (di <= ledgerLo) for (let L = ledgerLo; L >= (di % 2 === ledgerLo % 2 ? di : di + 1); L -= 2)
+      el('line', { x1: x - 13, y1: staffBottom - (L - bottomDi) * SP/2, x2: x + 13, y2: staffBottom - (L - bottomDi) * SP/2, stroke: 'var(--staff-ink)', 'stroke-width': 1.1 }, g);
+    if (di >= ledgerHi) for (let L = ledgerHi; L <= (di % 2 === ledgerHi % 2 ? di : di - 1); L += 2)
+      el('line', { x1: x - 13, y1: staffBottom - (L - bottomDi) * SP/2, x2: x + 13, y2: staffBottom - (L - bottomDi) * SP/2, stroke: 'var(--staff-ink)', 'stroke-width': 1.1 }, g);
+
+    if (needAcc) drawAcc(g, x - 17, y, n.alt, 20);
+
+    el('ellipse', { cx: x, cy: y, rx: 8.3, ry: 5.6, fill: 'var(--staff-ink)', transform: `rotate(-14 ${x} ${y})`, class: 'notehead' }, g);
+    el('ellipse', { cx: x, cy: y, rx: 4.4, ry: 2.7, fill: 'var(--surface)', transform: `rotate(-58 ${x} ${y})` }, g);
+
+    const nm = dispNote(n);
+    txt(g, x, nameY, nm, { 'text-anchor': 'middle', 'font-size': 13.5, 'font-weight': 600, fill: 'var(--ink)', 'font-family': 'system-ui, sans-serif', class: 'nlabel' });
+    if (s.deg) txt(g, x, degY, s.deg, { 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)', 'font-family': 'system-ui, sans-serif' });
+
+    let tip = nm;
+    if (hasFing && writtenBuilt) {
+      const wn = writtenBuilt.notes[s.idx];
+      const wm = noteMidi(wn);
+      const fing = fingeringFor(wm);
+      if (fing) {
+        drawValves(g, x, valveY, fing.f, 5.5, 15);
+        tip += ' — ' + T('ui.fingering') + ': ' + comboText(fing.f);
+        if (fing.a) tip += ' (' + T('ui.alt') + '.: ' + fing.a.map(comboText).join(', ') + ')';
+        if (fing.i) tip += '. ' + T('intonation.' + fing.i);
+        if (state.view === 'concert') tip += ' [' + T('ui.forWritten', { note: dispNote(wn) }) + ']';
+      } else {
+        txt(g, x, valveY + 4, '—', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
+        tip += ' — ' + T('ui.outOfRange');
+      }
+    }
+    title.textContent = tip;
+    noteRefs.push({ g, idx: s.idx });
+  });
+  return noteRefs;
+}
+function playbackOrder(state, len) {
+  const up = Array.from({ length: len }, (_, i) => i);
+  if (state.dir === 'updown') return up.concat(up.slice(0, -1).reverse());
+  return up;
+}
+
+/* ---------------- Kvintsirkelen ---------------- */
+function sectorPath(cx, cy, r1, r2, a0, a1) {
+  const p = (r, a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const [x0, y0] = p(r2, a0), [x1, y1] = p(r2, a1), [x2, y2] = p(r1, a1), [x3, y3] = p(r1, a0);
+  return `M${x0.toFixed(1)} ${y0.toFixed(1)} A${r2} ${r2} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)} A${r1} ${r1} 0 0 0 ${x3.toFixed(1)} ${y3.toFixed(1)} Z`;
+}
+const SLOT_COUNTS = ['0', '1♯', '2♯', '3♯', '4♯', '5♯/7♭', '6♯/6♭', '5♭/7♯', '4♭', '3♭', '2♭', '1♭'];
+function renderCircle(state, sigF, heading) {
+  const svg = document.getElementById('circleSvg');
+  svg.innerHTML = '';
+  const cx = 280, cy = 280;
+  const ins = INSTR_BY_ID[state.instrId];
+  const transposing = !!(ins.letters || ins.semis);
+  const selPc = pcOf(state.tonic);
+  const selSlot = findSlot(selPc, state.ring === 'maj' ? 'maj' : 'min');
+  for (let i = 0; i < 12; i++) {
+    const a0 = (-105 + i * 30) * Math.PI / 180;
+    const a1 = a0 + 30 * Math.PI / 180;
+    const mid = (a0 + a1) / 2;
+    const isSelSlot = selSlot && selSlot.slot === i;
+    const neigh = selSlot && (i === (selSlot.slot + 1) % 12 || i === (selSlot.slot + 11) % 12);
+
+    const majSel = isSelSlot && state.ring === 'maj';
+    const majFill = majSel ? 'var(--brass)' : (neigh && state.ring === 'maj') ? 'var(--brass-soft)' : 'var(--surface)';
+    const pMaj = el('path', { d: sectorPath(cx, cy, 204, 272, a0, a1), fill: majFill, stroke: 'var(--line-strong)', 'stroke-width': 1, class: 'segpath' }, svg);
+    pMaj.addEventListener('click', () => selectSlot(i, 'maj'));
+
+    const minSel = isSelSlot && state.ring === 'min';
+    const minFill = minSel ? 'var(--slate)' : (neigh && state.ring === 'min') ? 'var(--slate-soft)' : 'var(--surface2)';
+    const pMin = el('path', { d: sectorPath(cx, cy, 146, 204, a0, a1), fill: minFill, stroke: 'var(--line-strong)', 'stroke-width': 1, class: 'segpath' }, svg);
+    pMin.addEventListener('click', () => selectSlot(i, 'min'));
+
+    const put = (r, arr, ring, sel) => {
+      const tx = cx + r * Math.cos(mid), ty = cy + r * Math.sin(mid);
+      const fill = sel ? (ring === 'maj' ? 'var(--on-brass)' : 'var(--on-slate)') : (ring === 'maj' ? 'var(--ink)' : 'var(--slate-strong)');
+      const fs = ring === 'maj' ? (arr.length > 1 ? 16 : 21) : (arr.length > 1 ? 12.5 : 15);
+      const names = arr.map(t => ring === 'maj' ? dispNote(t) : (T('keys.minorLowercase') ? lcFirst(dispNote(t)) : dispNote(t)));
+      const t = txt(svg, tx, ty, '', { 'text-anchor': 'middle', 'font-size': fs, fill, 'font-weight': ring === 'maj' ? 600 : 500 });
+      if (ring === 'maj') t.setAttribute('class', 'serif');
+      if (names.length === 1) { t.textContent = names[0]; t.setAttribute('y', ty + fs*0.34); }
+      else {
+        const s1 = el('tspan', { x: tx, y: ty - 2 }, t); s1.textContent = names[0];
+        const s2 = el('tspan', { x: tx, y: ty + fs + 1 }, t); s2.textContent = names[1];
+      }
+    };
+    put(238, CIRCLE[i].maj, 'maj', majSel);
+    put(175, CIRCLE[i].min, 'min', minSel);
+    txt(svg, cx + 130 * Math.cos(mid), cy + 130 * Math.sin(mid) + 4, SLOT_COUNTS[i], { 'text-anchor': 'middle', 'font-size': 11.5, fill: 'var(--muted)' });
+
+    if (selSlot && state.ring) {
+      const rMark = state.ring === 'maj' ? 212 : 154;
+      if (i === (selSlot.slot + 1) % 12) txt(svg, cx + rMark * Math.cos(mid), cy + rMark * Math.sin(mid) + 3, 'D', { 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--brass-strong)', 'font-weight': 700 });
+      if (i === (selSlot.slot + 11) % 12) txt(svg, cx + rMark * Math.cos(mid), cy + rMark * Math.sin(mid) + 3, 'S', { 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--brass-strong)', 'font-weight': 700 });
+    }
+  }
+  el('circle', { cx, cy, r: 118, fill: 'var(--surface)', stroke: 'var(--line-strong)' }, svg);
+  const kl = heading || keyLabel(state.tonic, state.ring === 'maj' ? 'dur' : 'moll');
+  const fs = kl.length > 16 ? 17 : kl.length > 11 ? 21 : 27;
+  txt(svg, cx, cy - 12, kl, { 'text-anchor': 'middle', 'font-size': fs, fill: 'var(--ink)', 'font-weight': 600, class: 'serif' });
+  if (sigF === undefined) sigF = fifthsOf(state.tonic) - (state.ring === 'maj' ? 0 : 3);
+  txt(svg, cx, cy + 16, fortegnText(sigF) + (SCALES[state.scale].sigOff === 'none' && state.scale !== 'krom' ? ' ' + T('ui.looseAccs') : ''), { 'text-anchor': 'middle', 'font-size': 14, fill: 'var(--muted)' });
+  if (transposing) {
+    const q = state.ring === 'maj' ? 'dur' : 'moll';
+    const other = state.view === 'written'
+      ? T('ui.hubSounds', { key: keyLabel(transposeBy(state.tonic, -ins.letters, -ins.semis, q), q) })
+      : T('ui.hubOn', { instr: instrName(ins.id), key: keyLabel(transposeBy(state.tonic, ins.letters, ins.semis, q), q) });
+    txt(svg, cx, cy + 42, other, { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--brass-strong)', 'font-weight': 600 });
+  }
+}
+
+/* ---------------- Klaviatur ---------------- */
+const WHITE_PCS = [0, 2, 4, 5, 7, 9, 11];
+function renderKeyboard(state, built, rootMidi) {
+  const svg = document.getElementById('kbdSvg');
+  svg.innerHTML = '';
+  const octaves = Math.max(2, state.oct + 1);
+  const startC = 12 * (Math.floor(rootMidi / 12));
+  const nWhite = octaves * 7 + 1;
+  const W = 700, kw = W / nWhite, H = 128, wh = 122, bh = 76, bw = kw * 0.62;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const inScale = new Map();
+  built.notes.forEach((n, i) => { inScale.set(noteMidi(n), { root: i === 0 || pcOf(n) === pcOf(built.notes[0]), name: dispNote(n) }); });
+  const whites = [];
+  for (let i = 0; i < nWhite; i++) {
+    const oct = Math.floor(i / 7), pc = WHITE_PCS[i % 7];
+    whites.push({ x: i * kw, midi: startC + oct * 12 + pc });
+  }
+  for (const k of whites) {
+    const m = inScale.get(k.midi);
+    el('rect', { x: k.x, y: 2, width: kw - 1, height: wh, rx: 3, fill: m ? (m.root ? 'var(--brass)' : 'var(--brass-soft)') : 'var(--surface)', stroke: 'var(--line-strong)' }, svg);
+    if (m) txt(svg, k.x + kw/2, wh - 8, m.name, { 'text-anchor': 'middle', 'font-size': 10.5, fill: m.root ? 'var(--on-brass)' : 'var(--ink)', 'font-weight': 600 });
+  }
+  for (const k of whites.slice(0, -1)) {
+    const pc = ((k.midi % 12) + 12) % 12;
+    if ([0, 2, 5, 7, 9].indexOf(pc) < 0) continue;
+    const m = inScale.get(k.midi + 1);
+    el('rect', { x: k.x + kw - bw/2, y: 2, width: bw, height: bh, rx: 2.5, fill: m ? (m.root ? 'var(--brass)' : 'var(--brass-strong)') : 'var(--ink)', stroke: 'var(--line-strong)' }, svg);
+    if (m) txt(svg, k.x + kw, bh - 8, m.name, { 'text-anchor': 'middle', 'font-size': 9, fill: 'var(--on-brass)', 'font-weight': 600 });
+  }
+}
+
+/* ================================================================
+   Lyd (Web Audio)
+   ================================================================ */
+let AC = null, playTimers = [], isPlaying = false, playBus = null;
+function ensureAC() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function midiFreq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+function brassTone(ac, freq, t0, dur, dest) {
+  const g = ac.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.30, t0 + 0.03);
+  g.gain.exponentialRampToValueAtTime(0.20, t0 + Math.min(0.18, dur * 0.5));
+  g.gain.setValueAtTime(0.20, t0 + dur - 0.06);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  const f = ac.createBiquadFilter();
+  f.type = 'lowpass';
+  f.Q.value = 0.9;
+  f.frequency.setValueAtTime(Math.min(Math.max(freq * 3.2, 300), 3800), t0);
+  f.frequency.exponentialRampToValueAtTime(Math.min(Math.max(freq * 5.5, 400), 4800), t0 + 0.06);
+  const o1 = ac.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = freq; o1.detune.value = -4;
+  const o2 = ac.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = freq; o2.detune.value = 5;
+  o1.connect(f); o2.connect(f); f.connect(g); g.connect(dest || ac.destination);
+  o1.start(t0); o2.start(t0);
+  o1.stop(t0 + dur + 0.05); o2.stop(t0 + dur + 0.05);
+}
+// Klingende justering: skrevet tone klinger (skrevet - semis)
+function soundingAdjust() {
+  const ins = INSTR_BY_ID[state.instrId];
+  if (state.view === 'written' && (ins.letters || ins.semis) && document.getElementById('soundingChk').checked) return -ins.semis;
+  return 0;
+}
+function stopPlayback() {
+  playTimers.forEach(clearTimeout); playTimers = [];
+  if (playBus) { try { playBus.disconnect(); } catch (e) {} playBus = null; }
+  isPlaying = false;
+  document.querySelectorAll('.staffnote.playing').forEach(n => n.classList.remove('playing'));
+  const b = document.getElementById('playBtn');
+  b.innerHTML = '<span class="tri">&#9654;</span> ' + T('ui.play');
+}
+function playAll() {
+  if (isPlaying) { stopPlayback(); return; }
+  const ac = ensureAC();
+  const adj = soundingAdjust();
+  const beat = 60 / state.tempo;
+  const dur = Math.min(beat * 0.95, 0.9);
+  const t0 = ac.currentTime + 0.08;
+  playBus = ac.createGain();
+  playBus.connect(ac.destination);
+  const bus = playBus;
+  const cols = currentNoteRefs;
+  cols.forEach((c, i) => {
+    brassTone(ac, midiFreq(c.midi + adj), t0 + i * beat, dur, bus);
+    playTimers.push(setTimeout(() => {
+      document.querySelectorAll('.staffnote.playing').forEach(n => n.classList.remove('playing'));
+      c.g.classList.add('playing');
+    }, (t0 - ac.currentTime + i * beat) * 1000));
+  });
+  playTimers.push(setTimeout(stopPlayback, (t0 - ac.currentTime + cols.length * beat) * 1000 + 150));
+  isPlaying = true;
+  document.getElementById('playBtn').innerHTML = '<span class="tri">&#9632;</span> ' + T('ui.stop');
+}
+function playOne(midi) {
+  const ac = ensureAC();
+  brassTone(ac, midiFreq(midi + soundingAdjust()), ac.currentTime + 0.02, 0.65);
+}
+
+/* ================================================================
+   Tilstand og navigasjon
+   ================================================================ */
+const state = {
+  lang: 'no',
+  instrId: 'tromp_bb',
+  tonic: { letter: 'C', alt: 0 },
+  ring: 'maj',
+  scale: 'dur',
+  view: 'concert',
+  naming: 'native',
+  oct: 1,
+  dir: 'up',
+  tempo: 96,
+  level: 1,
+};
+let currentNoteRefs = [];
+function currentInstr() { return INSTR_BY_ID[state.instrId]; }
+function isTransposing() { const i = currentInstr(); return !!(i.letters || i.semis); }
+function quality() { return state.ring === 'maj' ? 'dur' : 'moll'; }
+
+function selectSlot(slot, ring) {
+  const arr = CIRCLE[slot][ring];
+  let pick = arr[0];
+  for (const t of arr) if (t.letter === state.tonic.letter && t.alt === state.tonic.alt) pick = t;
+  state.tonic = pick;
+  if (SCALES[state.scale].ring !== ring) {
+    state.scale = ring === 'maj' ? 'dur' : 'nmoll';
+    document.getElementById('scaleSel').value = state.scale;
+  }
+  state.ring = ring;
+  renderAll();
+}
+function setTonic(t, ring) {
+  state.tonic = t;
+  if (ring && SCALES[state.scale].ring !== ring) {
+    state.scale = ring === 'maj' ? 'dur' : 'nmoll';
+    document.getElementById('scaleSel').value = state.scale;
+    state.ring = ring;
+  }
+  renderAll();
+}
+function relativeOf(t, ring) {
+  const i = LETTERS.indexOf(t.letter);
+  if (ring === 'maj') {
+    const nl = LETTERS[(i + 5) % 7];
+    const borrow = (i - 2 < 0) ? 12 : 0;
+    return { letter: nl, alt: LETTER_SEMIS[t.letter] + t.alt - 3 - (LETTER_SEMIS[nl] - borrow) };
+  }
+  const nl = LETTERS[(i + 2) % 7];
+  const carry = (i + 2 > 6) ? 12 : 0;
+  return { letter: nl, alt: LETTER_SEMIS[t.letter] + t.alt + 3 - (LETTER_SEMIS[nl] + carry) };
+}
+function respellIfNeeded(t, quality) {
+  const f = fifthsOf(t) - (quality === 'moll' ? 3 : 0);
+  if (f > 7) return tonicFromFifths(fifthsOf(t) - 12);
+  if (f < -7) return tonicFromFifths(fifthsOf(t) + 12);
+  return t;
+}
+function shiftFifth(t, d, quality) {
+  let f = fifthsOf(t) + d;
+  const off = quality === 'moll' ? 3 : 0;
+  if (f - off > 7) f -= 12;
+  if (f - off < -7) f += 12;
+  return tonicFromFifths(f);
+}
+
+/* ---------------- Registervalg ---------------- */
+// Rot i skrevet register: sikter mot nøkkelens midtlinje, begrenset til instrumentets omfang
+function chooseWrittenRoot(pc, ins, oct) {
+  let lo = ins.lo, hi = ins.hi;
+  if (ins.fing === 'brass3') { lo = Math.max(lo, FING_MIN); hi = Math.min(hi, FING_MAX); }
+  const span = 12 * oct;
+  let hiRoot = hi - span;
+  if (hiRoot < lo) hiRoot = lo;
+  const target = Math.min(Math.max(CLEFS[ins.clef].centerMidi - 6 * oct, lo), hiRoot);
+  let r = lo + ((pc - lo) % 12 + 12) % 12; // minste kandidat >= lo
+  let best = r;
+  while (r <= hiRoot) {
+    if (Math.abs(r - target) < Math.abs(best - target)) best = r;
+    r += 12;
+  }
+  return best;
+}
+// Rot for klingende visning: sentrér på notesystemet
+function chooseDisplayRoot(pc, ins, oct) {
+  const target = CLEFS[ins.clef].centerMidi - 6 * oct;
+  return pc + 12 * Math.round((target - pc) / 12);
+}
+
+/* ================================================================
+   Infopanel for tonearten
+   ================================================================ */
+function factHtml(label, value, big, clickable, id) {
+  return `<div class="fact${clickable ? ' clickable' : ''}"${id ? ` id="${id}" role="button" tabindex="0"` : ''}><b>${label}</b><span${big ? ' class="big"' : ''}>${value}</span></div>`;
+}
+function renderKeyInfo(built) {
+  const q = quality();
+  const t = state.tonic;
+  const ins = currentInstr();
+  const sigF = built.sigF;
+  const sig = sigList(sigF);
+  const sigNames = sig.length ? sig.map(a => dispNote({ letter: a.letter, alt: a.alt })).join(', ') : '—';
+
+  const rel = respellIfNeeded(relativeOf(t, state.ring), q === 'dur' ? 'moll' : 'dur');
+  const relQ = q === 'dur' ? 'moll' : 'dur';
+  const varT = respellIfNeeded(t, q === 'dur' ? 'moll' : 'dur');
+  const dom = shiftFifth(t, 1, q), sub = shiftFifth(t, -1, q);
+
+  const slotInfo = findSlot(pcOf(t), state.ring);
+  const enhArr = slotInfo ? CIRCLE[slotInfo.slot][state.ring] : [];
+  const curIdx = enhArr.findIndex(x => x.letter === t.letter && x.alt === t.alt);
+  const enhSafe = (enhArr.length > 1 && curIdx >= 0) ? enhArr[1 - curIdx] : null;
+
+  const el2 = document.getElementById('keyInfo');
+  const heading = scaleHeading(t, state.scale, q);
+
+  let html = `<div class="keyname">${heading}</div>
+  <div class="keysub">${state.view === 'written' ? T('ui.writtenKeyFor', { instr: instrName(ins.id) }) : T('ui.concertKey')} · ${scaleName(state.scale)}</div>
+  <div class="factgrid">`;
+  html += factHtml(T('ui.factSig'), `${fortegnText(sigF)}${sig.length ? ' · ' + sigNames : ''}`, false);
+  html += factHtml(T('ui.factRel'), keyLabel(rel, relQ), false, true, 'factRel');
+  html += factHtml(T('ui.factVar'), keyLabel(varT, q === 'dur' ? 'moll' : 'dur'), false, true, 'factVar');
+  html += factHtml(T('ui.factDom'), keyLabel(dom, q), false, true, 'factDom');
+  html += factHtml(T('ui.factSub'), keyLabel(sub, q), false, true, 'factSub');
+  html += factHtml(T('ui.factEnh'), enhSafe ? keyLabel(enhSafe, q) : '—', false, !!enhSafe, enhSafe ? 'factEnh' : null);
+  html += '</div>';
+
+  const transposing = isTransposing();
+  let mapped;
+  if (!transposing) {
+    mapped = T('ui.nonTransposing', { instr: instrName(ins.id) });
+  } else if (state.view === 'written') {
+    mapped = T('ui.soundsAs', {
+      key: keyLabel(transposeBy(t, -ins.letters, -ins.semis, q), q),
+      interval: intervalName(ins.letters, ins.semis),
+      dir: T(ins.semis > 0 ? 'theory.lower' : 'theory.higher'),
+    });
+  } else {
+    mapped = T('ui.writtenAs', {
+      instr: instrName(ins.id),
+      key: keyLabel(transposeBy(t, ins.letters, ins.semis, q), q),
+      interval: intervalName(ins.letters, ins.semis),
+      dir: T(ins.semis > 0 ? 'theory.higher' : 'theory.lower'),
+    });
+    if (ins.fing === 'brass3') mapped += T('ui.fingClause');
+  }
+  html += `<div class="trumpetline">${ins.group === 'brass' ? '🎺' : '🎼'} ${mapped}</div>`;
+  el2.innerHTML = html;
+
+  const bind = (id, fn) => {
+    const n = document.getElementById(id);
+    if (!n) return;
+    n.addEventListener('click', fn);
+    n.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
+  };
+  bind('factRel', () => { state.ring = relQ === 'dur' ? 'maj' : 'min'; setTonic(rel, state.ring); });
+  bind('factVar', () => { state.ring = q === 'dur' ? 'min' : 'maj'; setTonic(varT, state.ring); });
+  bind('factDom', () => setTonic(dom, state.ring));
+  bind('factSub', () => setTonic(sub, state.ring));
+  if (enhSafe) bind('factEnh', () => setTonic(enhSafe, state.ring));
+}
+
+/* ================================================================
+   Nivåer (anbefalte tonearter angitt som SKREVET toneart)
+   ================================================================ */
+const LEVEL_KEYS = [
+  [ { w: {letter:'C',alt:0}, ring:'maj', scale:'dur' },
+    { w: {letter:'F',alt:0}, ring:'maj', scale:'dur' },
+    { w: {letter:'G',alt:0}, ring:'maj', scale:'dur' },
+    { w: {letter:'A',alt:0}, ring:'min', scale:'nmoll' } ],
+  [ { w: {letter:'B',alt:-1}, ring:'maj', scale:'dur' },
+    { w: {letter:'E',alt:-1}, ring:'maj', scale:'dur' },
+    { w: {letter:'D',alt:0},  ring:'maj', scale:'dur' },
+    { w: {letter:'G',alt:0},  ring:'min', scale:'hmoll' },
+    { w: {letter:'D',alt:0},  ring:'min', scale:'mmoll' },
+    { w: {letter:'C',alt:0},  ring:'maj', scale:'krom' } ],
+  [ { w: {letter:'B',alt:0},  ring:'maj', scale:'dur' },
+    { w: {letter:'F',alt:1},  ring:'maj', scale:'dur' },
+    { w: {letter:'E',alt:-1}, ring:'min', scale:'mmoll' },
+    { w: {letter:'G',alt:0},  ring:'maj', scale:'arpdom7' },
+    { w: {letter:'C',alt:0},  ring:'min', scale:'arpdim7' },
+    { w: {letter:'D',alt:0},  ring:'min', scale:'dorisk' } ],
+  [ { w: {letter:'G',alt:0},  ring:'maj', scale:'alterert' },
+    { w: {letter:'C',alt:0},  ring:'maj', scale:'dimhalv' },
+    { w: {letter:'F',alt:0},  ring:'maj', scale:'heltone' },
+    { w: {letter:'B',alt:-1}, ring:'maj', scale:'bebopdom' },
+    { w: {letter:'E',alt:0},  ring:'maj', scale:'lyddom' } ],
+];
+function renderLevels() {
+  const wrap = document.getElementById('levels');
+  wrap.innerHTML = '';
+  const ins = currentInstr();
+  const brass = ins.fing === 'brass3';
+  const levels = T('levels');
+  levels.forEach((L, li) => {
+    const d = document.createElement('div');
+    d.className = 'level' + (state.level === li + 1 ? ' active' : '');
+    let keysHtml = '';
+    LEVEL_KEYS[li].forEach((k, ki) => {
+      const q = k.ring === 'maj' ? 'dur' : 'moll';
+      const t = state.view === 'written' ? k.w : transposeBy(k.w, -ins.letters, -ins.semis, q);
+      const lbl = (k.scale === 'dur' || k.scale === 'nmoll' || k.scale === 'hmoll' || k.scale === 'mmoll')
+        ? keyLabel(t, q) + (k.scale === 'hmoll' ? ' ' + T('ui.harm') : k.scale === 'mmoll' ? ' ' + T('ui.mel') : '')
+        : scaleHeading(t, k.scale, q);
+      keysHtml += `<button type="button" data-lvl="${li}" data-ki="${ki}">${lbl}</button>`;
+    });
+    const tips = brass ? L.brassTips : L.tips;
+    d.innerHTML = `<button type="button" class="lvl-head"><span class="lvl-num">${li + 1}</span><h3>${L.name}</h3></button>
+      <p><i>${L.sub}</i></p><p>${L.body}</p>
+      <ul>${tips.map(t => `<li>${t}</li>`).join('')}</ul>
+      <div class="lvl-keys">${keysHtml}</div>`;
+    d.querySelector('.lvl-head').addEventListener('click', () => { state.level = li + 1; renderLevels(); });
+    wrap.appendChild(d);
+  });
+  wrap.querySelectorAll('.lvl-keys button').forEach(b => {
+    b.addEventListener('click', () => {
+      const k = LEVEL_KEYS[+b.dataset.lvl][+b.dataset.ki];
+      const q = k.ring === 'maj' ? 'dur' : 'moll';
+      state.level = +b.dataset.lvl + 1;
+      state.scale = k.scale;
+      state.ring = k.ring;
+      state.tonic = state.view === 'written' ? k.w : transposeBy(k.w, -currentInstr().letters, -currentInstr().semis, q);
+      document.getElementById('scaleSel').value = k.scale;
+      renderAll();
+    });
+  });
+}
+
+/* ================================================================
+   Teori og oppslag
+   ================================================================ */
+function nn(letter, alt) { return dispNote({ letter, alt }); }
+function theoryContent() {
+  const boxes = [];
+  const ins = currentInstr();
+  const transposing = isTransposing();
+  const brass = ins.fing === 'brass3';
+  const sharpNames = SHARP_ORDER.map(l => nn(l, 1)).join(' – ');
+  const flatNames = FLAT_ORDER.map(l => nn(l, -1)).join(' – ');
+
+  boxes.push({ id: 'tKvint', title: T('theory.tKvintTitle'), html: T('theory.tKvint', {
+    exMajor: keyLabel({ letter: 'C', alt: 0 }, 'dur'),
+    exMinor: keyLabel({ letter: 'A', alt: 0 }, 'moll'),
+  }) });
+
+  let rows = '';
+  for (let f = -7; f <= 7; f++) {
+    const majT = tonicFromFifths(f);
+    const minT = relativeOf(majT, 'maj');
+    const accs = sigList(f).map(a => nn(a.letter, a.alt)).join(', ') || '—';
+    const cur = (state.ring === 'maj' ? fifthsOf(state.tonic) : fifthsOf(state.tonic) - 3) === f;
+    rows += `<tr${cur ? ' class="rowhl"' : ''}><td>${fortegnText(f)}</td><td class="notecell">${keyLabel(majT, 'dur')}</td><td class="notecell">${keyLabel(minT, 'moll')}</td><td>${accs}</td></tr>`;
+  }
+  boxes.push({ id: 'tFortegn', title: T('theory.tFortegnTitle'), html:
+    T('theory.tFortegn', { sharpOrder: sharpNames, flatOrder: flatNames }) +
+    `<div class="scroll-x"><table class="ref"><tr><th>${T('theory.thSig')}</th><th>${T('theory.thDur')}</th><th>${T('theory.thMoll')}</th><th>${T('theory.thAccs')}</th></tr>${rows}</table></div>` });
+
+  const q = quality();
+  const rel = respellIfNeeded(relativeOf(state.tonic, state.ring), q === 'dur' ? 'moll' : 'dur');
+  boxes.push({ id: 'tParallell', title: T('theory.tParallellTitle'), html: T('theory.tParallell', {
+    exKey: keyLabel(state.tonic, q),
+    exRel: keyLabel(rel, q === 'dur' ? 'moll' : 'dur'),
+    exVar1: keyLabel(state.tonic, 'dur'),
+    exVar2: keyLabel(respellIfNeeded(state.tonic, 'moll'), 'moll'),
+  }) });
+
+  // Transponering
+  let thtml;
+  if (transposing) {
+    thtml = T('theory.tTranspTransposing', {
+      instr: instrName(ins.id),
+      soundsNote: dispNote(transposeBy({ letter: 'C', alt: 0 }, -ins.letters, -ins.semis, 'dur')),
+      interval: intervalName(ins.letters, ins.semis),
+      direction: T(ins.semis > 0 ? 'theory.lower' : 'theory.higher'),
+      oppositeDirection: T(ins.semis > 0 ? 'theory.higher' : 'theory.lower'),
+    });
+    let trows = '';
+    for (let f = -5; f <= 6; f++) {
+      const c = tonicFromFifths(f);
+      const w = transposeBy(c, ins.letters, ins.semis, 'dur');
+      const cur = state.ring === 'maj' && pcOf(c) === pcOf(state.view === 'written' ? transposeBy(state.tonic, -ins.letters, -ins.semis, 'dur') : state.tonic);
+      trows += `<tr${cur ? ' class="rowhl"' : ''}><td class="notecell">${keyLabel(c, 'dur')}</td><td class="notecell">${keyLabel(w, 'dur')}</td><td>${fortegnText(fifthsOf(w))}</td></tr>`;
+    }
+    thtml += `<div class="scroll-x"><table class="ref"><tr><th>${T('theory.thConcert')}</th><th>${T('theory.thWritten', { instr: instrName(ins.id) })}</th><th>${T('theory.thWrittenSig')}</th></tr>${trows}</table></div>`;
+  } else {
+    thtml = T('theory.tTranspNon', { instr: instrName(ins.id) });
+  }
+  thtml += T('theory.tTranspTable');
+  boxes.push({ id: 'tTransp', title: T('theory.tTranspTitle', { instr: instrName(ins.id) }), html: thtml });
+
+  if (brass) {
+    boxes.push({ id: 'tIntonasjon', title: T('theory.tIntonasjonTitle'), html: T('theory.tIntonasjon', {
+      noteD4: nn('D', 0) + '4', noteCiss4: nn('C', 1) + '4', noteE5: nn('E', 0) + '5', noteB5: nn('B', -1) + '5',
+      alt3list: [nn('A',0)+'3', nn('E',0)+'4', nn('A',0)+'4', nn('C',1)+'5', nn('A',0)+'5'].join(', '),
+    }) });
+    let ghtml = T('theory.tGrep', { instr: instrName(ins.id), low: nn('F', 1) + '3', high: nn('G', 0) + '6' });
+    if (ins.fourValve) ghtml += T('theory.tGrepPiccoloNote');
+    ghtml += '<div class="chartgrid" id="chartGrid"></div>';
+    boxes.push({ id: 'tGrep', title: T('theory.tGrepTitle', { low: nn('F', 1) + '3', high: nn('G', 0) + '6' }), html: ghtml });
+  }
+  return boxes;
+}
+function renderTheory(writtenSet) {
+  const wrap = document.getElementById('theoryBoxes');
+  const openSet = {};
+  wrap.querySelectorAll('details').forEach(d => { openSet[d.dataset.id] = d.open; });
+  wrap.innerHTML = '';
+  theoryContent().forEach(b => {
+    const d = document.createElement('details');
+    d.className = 'tbox';
+    d.dataset.id = b.id;
+    if (openSet[b.id]) d.open = true;
+    d.innerHTML = `<summary>${b.title}</summary><div class="tbody">${b.html}</div>`;
+    wrap.appendChild(d);
+  });
+  renderChart(writtenSet);
+}
+function renderChart(writtenSet) {
+  const grid = document.getElementById('chartGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const useFlats = fifthsOf(state.tonic) < 0;
+  for (let m = FING_MIN; m <= FING_MAX; m++) {
+    const fing = FINGERINGS[m];
+    const sp = spellPitch(m, useFlats);
+    const spAlt = spellPitch(m, !useFlats);
+    let label = dispNote(sp);
+    if (sp.letter !== spAlt.letter || sp.alt !== spAlt.alt) label += ' / ' + dispNote(spAlt);
+    const cell = document.createElement('div');
+    cell.className = 'chartcell' + (writtenSet && writtenSet.has(m) ? ' inscale' : '');
+    cell.innerHTML = `<div class="cname">${label}</div><div class="coct">${T('ui.octaveWord')} ${sp.octave}</div>`;
+    const svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 64 30');
+    svg.setAttribute('width', '64'); svg.setAttribute('height', '30');
+    drawValves(svg, 32, 10, fing.f, 5, 16);
+    cell.appendChild(svg);
+    const alt = document.createElement('div');
+    alt.className = 'calt';
+    alt.textContent = fing.a ? T('ui.alt') + ': ' + fing.a.map(comboText).join(', ') : comboText(fing.f);
+    cell.appendChild(alt);
+    cell.title = label + ' — ' + T('ui.fingering') + ': ' + comboText(fing.f)
+      + (fing.a ? ' (' + T('ui.alt') + '.: ' + fing.a.map(comboText).join(', ') + ')' : '')
+      + (fing.i ? '. ' + T('intonation.' + fing.i) : '');
+    grid.appendChild(cell);
+  }
+}
+
+/* ================================================================
+   Hovedrendring + oppstart
+   ================================================================ */
+const STEP_NAMES = { 1: '½', 2: '1', 3: '1½', 4: '2', 5: '2½' };
+function refreshStatic() {
+  document.querySelectorAll('[data-t]').forEach(n => { n.textContent = T(n.getAttribute('data-t')); });
+  const ins = currentInstr();
+  const vb = document.querySelectorAll('#segView button');
+  vb[0].textContent = T('ui.viewConcert');
+  vb[1].textContent = T('ui.viewWritten', { instr: instrName(ins.id) });
+  const nb = document.querySelectorAll('#segNaming button');
+  nb[0].textContent = T('ui.namingNative');
+  nb[1].textContent = T('ui.namingIntl');
+  document.getElementById('soundingLabel').textContent = T('ui.playSounding', { instr: instrName(ins.id) });
+  document.getElementById('tempoVal').textContent = state.tempo + ' ' + T('ui.bpm');
+  if (!isPlaying) document.getElementById('playBtn').innerHTML = '<span class="tri">&#9654;</span> ' + T('ui.play');
+  const transposing = isTransposing();
+  document.getElementById('footerRule').textContent = transposing
+    ? T('footer.ruleTransposing', { instr: instrName(ins.id), interval: intervalName(ins.letters, ins.semis), direction: T(ins.semis > 0 ? 'theory.lower' : 'theory.higher') })
+    : T('footer.ruleNon', { instr: instrName(ins.id) });
+  document.getElementById('htmlRoot').setAttribute('lang', state.lang);
+}
+function rebuildSelectors() {
+  // Skalavelger
+  const sel = document.getElementById('scaleSel');
+  sel.innerHTML = '';
+  SCALE_GROUPS.forEach(g => {
+    const og = document.createElement('optgroup');
+    og.label = T('scaleGroups.' + g.key);
+    g.ids.forEach(id => {
+      const o = document.createElement('option');
+      o.value = id;
+      o.textContent = scaleName(id);
+      og.appendChild(o);
+    });
+    sel.appendChild(og);
+  });
+  sel.value = state.scale;
+  // Instrumentvelger
+  const isel = document.getElementById('instrSel');
+  isel.innerHTML = '';
+  INSTR_GROUP_ORDER.forEach(gr => {
+    const og = document.createElement('optgroup');
+    og.label = T('instrumentGroups.' + gr);
+    INSTRUMENTS.filter(x => x.group === gr).forEach(x => {
+      const o = document.createElement('option');
+      o.value = x.id;
+      o.textContent = instrName(x.id);
+      og.appendChild(o);
+    });
+    isel.appendChild(og);
+  });
+  isel.value = state.instrId;
+}
+function renderAll() {
+  stopPlayback();
+  const ins = currentInstr();
+  const q = quality();
+  const transposing = isTransposing();
+  if (!transposing && state.view !== 'concert') state.view = 'concert';
+  // Instrumenter med lite omfang får ikke 2 oktaver
+  const canTwoOct = (ins.hi - ins.lo) >= 24;
+  if (!canTwoOct && state.oct === 2) state.oct = 1;
+
+  // Skrevet skala (for grep og register); vist skala kan være klingende
+  const wTonic = state.view === 'written' ? state.tonic : transposeBy(state.tonic, ins.letters, ins.semis, q);
+  const wRoot = chooseWrittenRoot(pcOf(wTonic), ins, state.oct);
+  const wBuilt = buildScale(wTonic, state.scale, wRoot, state.oct);
+  let built, rootMidi, displayClef = ins.clef;
+  if (state.view === 'written' || !transposing) { built = wBuilt; rootMidi = wRoot; }
+  else {
+    // Klingende visning: samme oktav som instrumentet faktisk klinger i
+    rootMidi = wRoot - ins.semis;
+    built = buildScale(state.tonic, state.scale, rootMidi, state.oct);
+    // Velg nøkkel etter klingende register
+    displayClef = (rootMidi + 6 * state.oct) < 58 ? 'bass' : 'treble';
+  }
+
+  refreshStatic();
+  rebuildSelectors();
+
+  const heading = scaleHeading(state.tonic, state.scale, q);
+  renderCircle(state, built.sigF, heading);
+  const refs = renderStaff(state, built, wBuilt, displayClef);
+  currentNoteRefs = refs.map(r => ({ g: r.g, midi: noteMidi(built.notes[r.idx]) }));
+  currentNoteRefs.forEach(c => {
+    c.g.addEventListener('click', () => playOne(c.midi));
+    c.g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playOne(c.midi); } });
+  });
+  renderKeyboard(state, built, rootMidi);
+  renderKeyInfo(built);
+  renderLevels();
+
+  document.getElementById('staffTitle').innerHTML =
+    `${heading} <span class="mode-tag">${state.view === 'written' ? T('ui.viewWritten', { instr: instrName(ins.id) }) : T('ui.viewConcert')}</span>`;
+  document.getElementById('staffHint').textContent =
+    ins.fing === 'brass3'
+      ? (state.view === 'written' ? T('ui.staffHintWritten') : T('ui.staffHintConcert', { instr: instrName(ins.id) }))
+      : T('ui.staffHintNoFing');
+
+  const pl = document.getElementById('patternLine');
+  if (state.scale === 'krom') {
+    pl.innerHTML = `<b>${T('ui.stepsLabel')}:</b> ${T('ui.chromSteps')}`;
+  } else {
+    const midis = built.notes.map(noteMidi);
+    const steps = [];
+    for (let i = 1; i < midis.length && i <= SCALES[state.scale].semis.length; i++)
+      steps.push(STEP_NAMES[midis[i] - midis[i-1]] || (midis[i] - midis[i-1]) + ' ht');
+    pl.innerHTML = `<b>${T('ui.stepsLabel')}:</b> ${steps.join(' – ')} &nbsp;·&nbsp; ${T('ui.stepsLegend')}`;
+  }
+
+  let kbdHint;
+  if (state.view === 'written' && transposing) {
+    kbdHint = T(ins.semis > 0 ? 'ui.kbdWritten' : 'ui.kbdWrittenUp', { interval: intervalName(ins.letters, ins.semis) });
+  } else {
+    kbdHint = T('ui.kbdConcert');
+  }
+  document.getElementById('kbdHint').textContent = kbdHint + ' ' + T('ui.kbdRoot');
+
+  const writtenSet = ins.fing === 'brass3' ? new Set(wBuilt.notes.map(noteMidi)) : null;
+  renderTheory(writtenSet);
+
+  const slotInfo = findSlot(pcOf(state.tonic), state.ring);
+  document.getElementById('enhBtn').disabled = !(slotInfo && CIRCLE[slotInfo.slot][state.ring].length > 1);
+  document.getElementById('viewWrap').style.display = transposing ? '' : 'none';
+  const octBtns = document.querySelectorAll('#segOct button');
+  octBtns[1].disabled = !canTwoOct;
+  octBtns.forEach(b => b.setAttribute('aria-pressed', +b.dataset.o === state.oct ? 'true' : 'false'));
+  document.getElementById('soundingWrap').style.display = (transposing && state.view === 'written') ? 'inline-flex' : 'none';
+  document.getElementById('namingWrap').style.display = state.lang === 'en' ? 'none' : '';
+  document.querySelectorAll('#segView button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === state.view ? 'true' : 'false'));
+  document.querySelectorAll('#segNaming button').forEach(b => b.setAttribute('aria-pressed', b.dataset.n === state.naming ? 'true' : 'false'));
+  saveSettings();
+}
+
+/* ---------------- Innstillinger ---------------- */
+function saveSettings() {
+  try {
+    localStorage.setItem('notecircle', JSON.stringify({ lang: state.lang, instrId: state.instrId, naming: state.naming }));
+  } catch (e) {}
+}
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem('notecircle') || '{}');
+    if (s.lang && I18N[s.lang]) state.lang = s.lang;
+    if (s.instrId && INSTR_BY_ID[s.instrId]) state.instrId = s.instrId;
+    if (s.naming === 'intl') state.naming = 'intl';
+  } catch (e) {}
+  const p = new URLSearchParams(location.search);
+  const lang = p.get('lang'), instr = p.get('instr');
+  if (lang && I18N[lang]) state.lang = lang;
+  if (instr && INSTR_BY_ID[instr]) state.instrId = instr;
+}
+
+function initSeg(id, attr, fn) {
+  const seg = document.getElementById(id);
+  seg.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      fn(b.dataset[attr]);
+    });
+  });
+}
+function setInstrument(id) {
+  const oldIns = currentInstr();
+  const q = quality();
+  // Bevar klingende toneart på tvers av instrumentbytte
+  const concertTonic = state.view === 'written' ? transposeBy(state.tonic, -oldIns.letters, -oldIns.semis, q) : state.tonic;
+  state.instrId = id;
+  const ins = currentInstr();
+  if (!(ins.letters || ins.semis)) state.view = 'concert';
+  state.tonic = state.view === 'written' ? transposeBy(concertTonic, ins.letters, ins.semis, q) : concertTonic;
+  renderAll();
+}
+function init() {
+  loadSettings();
+
+  // Flaggrad
+  const row = document.getElementById('flagRow');
+  LANG_ORDER.forEach(code => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'flagbtn';
+    b.dataset.lang = code;
+    b.setAttribute('aria-label', (I18N[code] && I18N[code].meta && I18N[code].meta.name) || code);
+    b.setAttribute('aria-pressed', code === state.lang ? 'true' : 'false');
+    b.innerHTML = flagSvg(code);
+    b.title = (I18N[code] && I18N[code].meta && I18N[code].meta.name) || code;
+    b.addEventListener('click', () => {
+      state.lang = code;
+      if (state.lang === 'en') state.naming = 'native';
+      row.querySelectorAll('.flagbtn').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      renderAll();
+    });
+    row.appendChild(b);
+  });
+
+  document.getElementById('instrSel').addEventListener('change', e => setInstrument(e.target.value));
+  document.getElementById('scaleSel').addEventListener('change', e => {
+    state.scale = e.target.value;
+    const ring = SCALES[state.scale].ring;
+    if (ring !== state.ring) {
+      const slot = findSlot(pcOf(state.tonic), ring);
+      if (slot) state.tonic = CIRCLE[slot.slot][ring][slot.enh];
+      state.ring = ring;
+    }
+    renderAll();
+  });
+
+  initSeg('segView', 'v', v => {
+    if (v === state.view) return;
+    const ins = currentInstr();
+    const q = quality();
+    state.tonic = v === 'written' ? transposeBy(state.tonic, ins.letters, ins.semis, q) : transposeBy(state.tonic, -ins.letters, -ins.semis, q);
+    state.view = v;
+    renderAll();
+  });
+  initSeg('segNaming', 'n', n => { state.naming = n; renderAll(); });
+  initSeg('segOct', 'o', o => { state.oct = +o; renderAll(); });
+  initSeg('segDir', 'd', d => { state.dir = d; renderAll(); });
+
+  const tempo = document.getElementById('tempo');
+  tempo.addEventListener('input', () => {
+    state.tempo = +tempo.value;
+    document.getElementById('tempoVal').textContent = state.tempo + ' ' + T('ui.bpm');
+  });
+  document.getElementById('playBtn').addEventListener('click', playAll);
+  document.getElementById('enhBtn').addEventListener('click', () => {
+    const slotInfo = findSlot(pcOf(state.tonic), state.ring);
+    if (!slotInfo) return;
+    const arr = CIRCLE[slotInfo.slot][state.ring];
+    if (arr.length < 2) return;
+    const cur = arr.findIndex(x => x.letter === state.tonic.letter && x.alt === state.tonic.alt);
+    state.tonic = arr[cur >= 0 ? 1 - cur : 0];
+    renderAll();
+  });
+
+  renderAll();
+}
+if (typeof document !== 'undefined') {
+  init();
+  if (typeof window !== 'undefined') window.__app = { state, renderAll, setInstrument };
+}
+if (typeof module !== 'undefined' && typeof document === 'undefined') {
+  module.exports = { LETTERS, LETTER_SEMIS, noteMidi, diaIndex, fifthsOf, pcOf, tonicFromFifths,
+    sigMap, sigList, upMajorSecond, transposeBy, intervalParts, normalizeTonic,
+    CIRCLE, findSlot, norName, intlName,
+    SCALES, SCALE_GROUPS, spellPitch, buildScale, chooseRootMidi, FINGERINGS, FING_MIN, FING_MAX,
+    INSTRUMENTS, INSTR_BY_ID, CLEFS, I18N, NOTE_SYSTEMS,
+    relativeOf, respellIfNeeded, shiftFifth, chooseWrittenRoot, chooseDisplayRoot,
+    nativeName, state, LEVEL_KEYS };
+}
+
+</script>
+</body>
+</html>

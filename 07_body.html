@@ -1,0 +1,78 @@
+<main class="layout">
+  <section class="col">
+    <div class="card card-circle">
+      <h2 data-t="ui.circleTitle"></h2>
+      <p class="hint" data-t="ui.circleHint"></p>
+      <svg id="circleSvg" viewBox="0 0 560 560" role="img" aria-label="Kvintsirkelen"></svg>
+      <div class="circle-foot">
+        <div class="legend">
+          <span><span class="dot dur"></span><span data-t="ui.dur"></span></span>
+          <span><span class="dot moll"></span><span data-t="ui.moll"></span></span>
+        </div>
+        <button type="button" class="ghost" id="enhBtn" data-t="ui.enhSwap"></button>
+      </div>
+    </div>
+    <div class="card" id="keyInfo"></div>
+  </section>
+
+  <section class="col">
+    <div class="card controls">
+      <label class="ctl">
+        <span class="seg-label" data-t="ui.scale"></span>
+        <select id="scaleSel"></select>
+      </label>
+      <div class="ctl">
+        <span class="seg-label" data-t="ui.range"></span>
+        <div class="seg" id="segOct">
+          <button type="button" data-o="1" aria-pressed="true" data-t="ui.oct1"></button>
+          <button type="button" data-o="2" aria-pressed="false" data-t="ui.oct2"></button>
+        </div>
+      </div>
+      <div class="ctl">
+        <span class="seg-label" data-t="ui.direction"></span>
+        <div class="seg" id="segDir">
+          <button type="button" data-d="up" aria-pressed="true" data-t="ui.dirUp"></button>
+          <button type="button" data-d="updown" aria-pressed="false" data-t="ui.dirUpDown"></button>
+        </div>
+      </div>
+      <label class="ctl">
+        <span class="seg-label" data-t="ui.tempo"></span>
+        <input type="range" id="tempo" min="40" max="208" value="96" step="4">
+        <span class="tempoval" id="tempoVal"></span>
+      </label>
+      <button type="button" class="play" id="playBtn"><span class="tri">&#9654;</span> <span id="playLabel"></span></button>
+      <label class="chk" id="soundingWrap"><input type="checkbox" id="soundingChk" checked> <span id="soundingLabel"></span></label>
+    </div>
+
+    <div class="card staffcard">
+      <h2 id="staffTitle"></h2>
+      <p class="hint" id="staffHint"></p>
+      <div class="staff-wrap"><svg id="staffSvg"></svg></div>
+      <p class="pattern-line" id="patternLine"></p>
+    </div>
+
+    <div class="card">
+      <h2 data-t="ui.keyboard"></h2>
+      <p class="hint" id="kbdHint"></p>
+      <svg id="kbdSvg" viewBox="0 0 700 130" role="img" aria-label="Klaviatur med skalatoner"></svg>
+    </div>
+  </section>
+</main>
+
+<section class="card" style="margin-top:20px">
+  <h2 data-t="ui.levelsTitle"></h2>
+  <p class="hint" data-t="ui.levelsHint"></p>
+  <div class="levels" id="levels"></div>
+</section>
+
+<section class="theory">
+  <h2 class="sect serif" data-t="ui.theoryTitle"></h2>
+  <div id="theoryBoxes"></div>
+</section>
+
+<footer class="foot">
+  <span id="footerRule"></span>
+  <span data-t="ui.footerTuning"></span>
+</footer>
+</div>
+

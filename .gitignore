@@ -1,0 +1,5 @@
+app.js
+*.png
+*.svg
+q_*
+node_modules/
