@@ -77,7 +77,9 @@
     "footerTuning": "Stimmung: A4 = 440 Hz, gleichstufig temperiert.",
     "octaves": "Oktave|Oktaven",
     "and": "und",
-    "fingClause": " Die Griffe unter den Noten gelten für die notierten Töne."
+    "fingClause": " Die Griffe unter den Noten gelten für die notierten Töne.",
+    "variant": "Variante",
+    "standard": "Standard"
   },
   "intonation": {
     "i123": "Wird leicht zu hoch — den 3. Ventilzug ausziehen",
@@ -290,5 +292,23 @@
   "footer": {
     "ruleTransposing": "{instr}: Eine notierte Note klingt {interval} {direction}.",
     "ruleNon": "{instr}: Notierte und klingende Tonhöhe sind gleich."
+  },
+  "families": {
+    "trumpet": "Trompete",
+    "horn": "Horn",
+    "trombone": "Posaune",
+    "euphonium": "Euphonium",
+    "tuba": "Tuba",
+    "flute": "Flöte",
+    "oboe": "Oboe",
+    "clarinet": "Klarinette",
+    "bassoon": "Fagott",
+    "sax": "Saxophon",
+    "violinF": "Violine",
+    "violaF": "Viola",
+    "celloF": "Violoncello",
+    "dbassF": "Kontrabass",
+    "pianoF": "Klavier",
+    "percussion": "Schlagwerk"
   }
 }

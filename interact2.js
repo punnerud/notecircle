@@ -20,11 +20,27 @@ const langs = ['no','sv','da','de','fr','es','en'];
 for (const lang of langs) {
   step('språk ' + lang, () => { doc.querySelector(`.flagbtn[data-lang="${lang}"]`).dispatchEvent(new dom.window.MouseEvent('click', {bubbles:true})); });
 }
-const instrIds = [...doc.querySelectorAll('#instrSel option')].map(o => o.value);
-if (instrIds.length !== 41) errors.push('forventet 41 instrumenter, fikk ' + instrIds.length);
-for (const id of instrIds) {
-  step('instrument ' + id, () => app.setInstrument(id));
+// Gå gjennom alle familier og alle varianter via den nye to-nivå-velgeren
+const famIds = [...doc.querySelectorAll('#familySel option')].map(o => o.value);
+if (famIds.length !== 16) errors.push('forventet 16 familier, fikk ' + famIds.length);
+let variantCount = 0;
+for (const fid of famIds) {
+  step('familie ' + fid, () => {
+    const f = doc.getElementById('familySel');
+    f.value = fid;
+    f.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+  });
+  const vids = [...doc.querySelectorAll('#variantSel option')].map(o => o.value);
+  variantCount += vids.length;
+  for (const vid of vids.slice(1)) {
+    step('variant ' + vid, () => {
+      const v = doc.getElementById('variantSel');
+      v.value = vid;
+      v.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    });
+  }
 }
+if (variantCount !== 41) errors.push('forventet 41 varianter totalt, fikk ' + variantCount);
 
 // Kombinasjoner: hvert instrument x view-toggle x et par skalaer/tonearter
 for (const id of ['tromp_bb','picctromp','barisax','horn_f','tuba','viola','dbass','klokkespill','pauker','tuba_bb','basstromp','klar_eb']) {

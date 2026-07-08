@@ -36,21 +36,32 @@ function rebuildSelectors() {
     sel.appendChild(og);
   });
   sel.value = state.scale;
-  // Instrumentvelger
-  const isel = document.getElementById('instrSel');
-  isel.innerHTML = '';
+  // Familievelger (kort liste) + variantvelger innenfor familien
+  const fsel = document.getElementById('familySel');
+  fsel.innerHTML = '';
   INSTR_GROUP_ORDER.forEach(gr => {
     const og = document.createElement('optgroup');
     og.label = T('instrumentGroups.' + gr);
-    INSTRUMENTS.filter(x => x.group === gr).forEach(x => {
+    FAMILIES.filter(f => f.group === gr).forEach(f => {
       const o = document.createElement('option');
-      o.value = x.id;
-      o.textContent = instrName(x.id);
+      o.value = f.id;
+      o.textContent = T('families.' + f.id);
       og.appendChild(o);
     });
-    isel.appendChild(og);
+    fsel.appendChild(og);
   });
-  isel.value = state.instrId;
+  const fam = FAMILY_BY_ID[currentInstr().family];
+  fsel.value = fam.id;
+  const vsel = document.getElementById('variantSel');
+  vsel.innerHTML = '';
+  fam.members.forEach(id => {
+    const o = document.createElement('option');
+    o.value = id;
+    o.textContent = instrName(id) + (id === fam.std ? ' (' + T('ui.standard') + ')' : '');
+    vsel.appendChild(o);
+  });
+  vsel.value = state.instrId;
+  document.getElementById('variantWrap').style.display = fam.members.length > 1 ? '' : 'none';
 }
 function renderAll() {
   stopPlayback();
@@ -202,7 +213,8 @@ function init() {
     row.appendChild(b);
   });
 
-  document.getElementById('instrSel').addEventListener('change', e => setInstrument(e.target.value));
+  document.getElementById('familySel').addEventListener('change', e => setInstrument(FAMILY_BY_ID[e.target.value].std));
+  document.getElementById('variantSel').addEventListener('change', e => setInstrument(e.target.value));
   document.getElementById('scaleSel').addEventListener('change', e => {
     state.scale = e.target.value;
     const ring = SCALES[state.scale].ring;
@@ -267,7 +279,7 @@ if (typeof module !== 'undefined' && typeof document === 'undefined') {
     sigMap, sigList, upMajorSecond, transposeBy, intervalParts, normalizeTonic,
     CIRCLE, findSlot, norName, intlName,
     SCALES, SCALE_GROUPS, spellPitch, buildScale, chooseRootMidi, FINGERINGS, FING_MIN, FING_MAX,
-    INSTRUMENTS, INSTR_BY_ID, CLEFS, I18N, NOTE_SYSTEMS,
+    INSTRUMENTS, INSTR_BY_ID, FAMILIES, FAMILY_BY_ID, CLEFS, I18N, NOTE_SYSTEMS,
     relativeOf, respellIfNeeded, shiftFifth, chooseWrittenRoot, chooseDisplayRoot,
     nativeName, state, LEVEL_KEYS };
 }

@@ -10,7 +10,7 @@ Interaktiv kvintsirkel for hele orkesteret — skalaer, fortegn, transponering o
 
 - **Circle of fifths** — clickable major/minor rings, dominant/subdominant markers, enharmonic swap
 - **Staff notation** in treble, bass and alto clef with correct key signatures, ledger lines and accidentals; clef follows the sounding register in concert view
-- **41 instruments** — strings, woodwinds, brass (9 trumpet variants: B♭/C/D/E♭, piccolo, cornets, flugelhorn, bass trumpet), keyboard & percussion — each with its own transposition, clef and range
+- **16 instrument families** with a short main list and a variant list below (marked “(standard)”): 41 variants in total — 9 trumpet variants (B♭/C/D/E♭, piccolo, cornets, flugelhorn, bass trumpet), 4 clarinets, 4 saxophones, brass-band low brass, strings, keyboard & percussion — each with its own transposition, clef and range
 - **Concert ↔ written pitch** toggle, with valve fingerings wherever the standard 3-valve chart applies (trumpet family, althorn, brass-band euphonium & tubas)
 - **26 scales** from beginner to professional: major, three minors, pentatonics, blues, chromatic, church modes, arpeggios, jazz & symmetric scales
 - **Native note names per language** — H/B (no·sv·da·de), solfège (fr·es), letters (en) — with international toggle

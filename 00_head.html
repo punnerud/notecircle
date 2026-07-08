@@ -334,7 +334,7 @@ table.ref tr.rowhl td { background: var(--brass-soft); }
 .flagbtn svg { display: block; border-radius: 3px; }
 .flagbtn:hover { transform: translateY(-1px); }
 .flagbtn[aria-pressed="true"] { border-color: var(--brass); box-shadow: 0 0 0 2px var(--brass); }
-select#instrSel {
+select#familySel, select#variantSel {
   font: inherit; color: var(--ink); background: var(--surface);
   border: 1px solid var(--line-strong); border-radius: 8px; padding: 7px 10px;
   max-width: 280px;
@@ -359,7 +359,11 @@ footer.foot {
     </div>
     <div>
       <span class="seg-label" data-t="ui.instrument">Instrument</span>
-      <select id="instrSel"></select>
+      <select id="familySel"></select>
+      <div id="variantWrap" style="margin-top:6px">
+        <span class="seg-label" data-t="ui.variant">Variant</span>
+        <select id="variantSel"></select>
+      </div>
     </div>
     <div id="viewWrap">
       <span class="seg-label" data-t="ui.view">Visning</span>

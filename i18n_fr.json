@@ -77,7 +77,9 @@
     "footerTuning": "Diapason : La4 = 440 Hz, tempérament égal.",
     "octaves": "octave|octaves",
     "and": "et",
-    "fingClause": " Les doigtés sous les notes correspondent aux notes écrites."
+    "fingClause": " Les doigtés sous les notes correspondent aux notes écrites.",
+    "variant": "Variante",
+    "standard": "standard"
   },
   "intonation": {
     "i123": "A tendance à sonner haut — sortez la coulisse du 3e piston",
@@ -291,5 +293,23 @@
   "footer": {
     "ruleTransposing": "{instr} : la note écrite sonne {interval} {direction}.",
     "ruleNon": "{instr} : la hauteur écrite et la hauteur réelle sont identiques."
+  },
+  "families": {
+    "trumpet": "Trompette",
+    "horn": "Cor",
+    "trombone": "Trombone",
+    "euphonium": "Euphonium",
+    "tuba": "Tuba",
+    "flute": "Flûte",
+    "oboe": "Hautbois",
+    "clarinet": "Clarinette",
+    "bassoon": "Basson",
+    "sax": "Saxophone",
+    "violinF": "Violon",
+    "violaF": "Alto",
+    "celloF": "Violoncelle",
+    "dbassF": "Contrebasse",
+    "pianoF": "Piano",
+    "percussion": "Percussions"
   }
 }

@@ -77,7 +77,9 @@
     "footerTuning": "Stemning: A4 = 440 Hz, ligesvævende temperatur.",
     "octaves": "oktav|oktaver",
     "and": "og",
-    "fingClause": " Grebene under noderne gælder de noterede toner."
+    "fingClause": " Grebene under noderne gælder de noterede toner.",
+    "variant": "Variant",
+    "standard": "standard"
   },
   "intonation": {
     "i123": "Har tendens til at være høj — skub 3.-ventilbøjlen ud",
@@ -290,5 +292,23 @@
   "footer": {
     "ruleTransposing": "{instr}: en noteret tone klinger {interval} {direction}.",
     "ruleNon": "{instr}: noteret og klingende tonehøjde er den samme."
+  },
+  "families": {
+    "trumpet": "Trompet",
+    "horn": "Valdhorn",
+    "trombone": "Trombone",
+    "euphonium": "Euphonium",
+    "tuba": "Tuba",
+    "flute": "Fløjte",
+    "oboe": "Obo",
+    "clarinet": "Klarinet",
+    "bassoon": "Fagot",
+    "sax": "Saxofon",
+    "violinF": "Violin",
+    "violaF": "Bratsch",
+    "celloF": "Cello",
+    "dbassF": "Kontrabas",
+    "pianoF": "Klaver",
+    "percussion": "Slagtøj"
   }
 }

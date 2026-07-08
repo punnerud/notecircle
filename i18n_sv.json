@@ -77,7 +77,9 @@
     "footerTuning": "Stämning: A4 = 440 Hz, liksvävande temperatur.",
     "octaves": "oktav|oktaver",
     "and": "och",
-    "fingClause": " Greppen under noterna gäller de noterade tonerna."
+    "fingClause": " Greppen under noterna gäller de noterade tonerna.",
+    "variant": "Variant",
+    "standard": "standard"
   },
   "intonation": {
     "i123": "Tenderar att bli hög — skjut ut tredje ventilbygeln",
@@ -290,5 +292,23 @@
   "footer": {
     "ruleTransposing": "{instr}: noterad ton klingar {interval} {direction}.",
     "ruleNon": "{instr}: noterad och klingande tonhöjd är densamma."
+  },
+  "families": {
+    "trumpet": "Trumpet",
+    "horn": "Valthorn",
+    "trombone": "Trombon",
+    "euphonium": "Eufonium",
+    "tuba": "Tuba",
+    "flute": "Flöjt",
+    "oboe": "Oboe",
+    "clarinet": "Klarinett",
+    "bassoon": "Fagott",
+    "sax": "Saxofon",
+    "violinF": "Violin",
+    "violaF": "Viola",
+    "celloF": "Cello",
+    "dbassF": "Kontrabas",
+    "pianoF": "Piano",
+    "percussion": "Slagverk"
   }
 }

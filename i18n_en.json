@@ -77,7 +77,9 @@
     "footerTuning": "Tuning: A4 = 440 Hz, equal temperament.",
     "octaves": "octave|octaves",
     "and": "and",
-    "fingClause": " The fingerings below the notes apply to the written pitches."
+    "fingClause": " The fingerings below the notes apply to the written pitches.",
+    "variant": "Variant",
+    "standard": "standard"
   },
   "intonation": {
     "i123": "Tends to run sharp — extend the 3rd-valve slide",
@@ -290,5 +292,23 @@
   "footer": {
     "ruleTransposing": "{instr}: a written note sounds {interval} {direction}.",
     "ruleNon": "{instr}: written and sounding pitch are the same."
+  },
+  "families": {
+    "trumpet": "Trumpet",
+    "horn": "French horn",
+    "trombone": "Trombone",
+    "euphonium": "Euphonium",
+    "tuba": "Tuba",
+    "flute": "Flute",
+    "oboe": "Oboe",
+    "clarinet": "Clarinet",
+    "bassoon": "Bassoon",
+    "sax": "Saxophone",
+    "violinF": "Violin",
+    "violaF": "Viola",
+    "celloF": "Cello",
+    "dbassF": "Double bass",
+    "pianoF": "Piano",
+    "percussion": "Percussion"
   }
 }

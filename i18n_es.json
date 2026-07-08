@@ -77,7 +77,9 @@
     "footerTuning": "Afinación: La4 = 440 Hz, temperamento igual.",
     "octaves": "octava|octavas",
     "and": "y",
-    "fingClause": " Las digitaciones bajo las notas corresponden a las notas escritas."
+    "fingClause": " Las digitaciones bajo las notas corresponden a las notas escritas.",
+    "variant": "Variante",
+    "standard": "estándar"
   },
   "intonation": {
     "i123": "Tiende a quedar alta — saca la bomba del tercer pistón",
@@ -290,5 +292,23 @@
   "footer": {
     "ruleTransposing": "{instr}: la nota escrita suena {interval} {direction}.",
     "ruleNon": "{instr}: la altura escrita y el sonido real coinciden."
+  },
+  "families": {
+    "trumpet": "Trompeta",
+    "horn": "Trompa",
+    "trombone": "Trombón",
+    "euphonium": "Bombardino",
+    "tuba": "Tuba",
+    "flute": "Flauta",
+    "oboe": "Oboe",
+    "clarinet": "Clarinete",
+    "bassoon": "Fagot",
+    "sax": "Saxofón",
+    "violinF": "Violín",
+    "violaF": "Viola",
+    "celloF": "Violonchelo",
+    "dbassF": "Contrabajo",
+    "pianoF": "Piano",
+    "percussion": "Percusión"
   }
 }
