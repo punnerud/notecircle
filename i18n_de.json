@@ -35,7 +35,7 @@
     "hubSounds": "klingend: {key}",
     "looseAccs": "(Versetzungszeichen)",
     "writtenKeyFor": "Notierte Tonart für {instr}",
-    "concertKey": "Klingende Tonart (Konzert)",
+    "concertKey": "Klingende Tonart",
     "factSig": "Vorzeichen",
     "factRel": "Paralleltonart (gemeinsame Vorzeichen)",
     "factVar": "Varianttonart (gleicher Grundton)",
@@ -201,7 +201,7 @@
     {
       "name": "Anfänger",
       "sub": "Musikschule, 1.–2. Jahr",
-      "body": "Dur in C, F und G (notiert), gegen Ende a-Moll. Eine Oktave, ruhig und gleichmäßig (♩ ≈ 60–72). Klang vor Technik.",
+      "body": "C-Dur, F-Dur und G-Dur (notiert), gegen Ende a-Moll. Eine Oktave, ruhig und gleichmäßig (♩ ≈ 60–72). Klang vor Technik.",
       "tips": [
         "Zuerst lange Töne: 8+ Schläge pro Ton mit ruhigem, gleichmäßigem Luftstrom oder Bogenstrich.",
         "Die Skala vor dem Spielen singen — den Ton hören, bevor man ihn erzeugt.",
@@ -229,7 +229,7 @@
       ]
     },
     {
-      "name": "Fortgeschritten",
+      "name": "Fortgeschrittene",
       "sub": "Musikgymnasium / Stufe 6–8",
       "body": "Alle 12 Dur- und Molltonarten auswendig, Arpeggien (Dur, Moll, Dom7, Dim7). Zwei Oktaven, wo das Register es zulässt. Sechzehntel bei ♩ ≈ 80–112, gemischte Artikulationen.",
       "tips": [
@@ -271,10 +271,10 @@
     "tParallellTitle": "Paralleltonart und Varianttonart",
     "tParallell": "<p>In der deutschen (und norwegischen) Theorie bezeichnet <b>Paralleltonart</b> die Dur- und Molltonart mit gemeinsamen Vorzeichen, deren Grundtöne eine kleine Terz auseinanderliegen: {exKey} ↔ {exRel}. (Im Englischen heißt das „relative key“ — Vorsicht beim Übersetzen!)</p><p>Die <b>Varianttonart</b> ist Dur und Moll auf <i>demselben Grundton</i>, z. B. {exVar1} und {exVar2} — gleiche Tonika, aber drei Vorzeichen Unterschied.</p><p>Moll gibt es in drei Formen: <b>natürlich</b> (wie die Durparallele), <b>harmonisch</b> (erhöhte 7. Stufe — ergibt einen Leitton und eine charakteristische übermäßige Sekunde) und <b>melodisch</b> (erhöhte 6. und 7. Stufe aufwärts; abwärts in der klassischen Tradition die natürliche Form).</p>",
     "tTranspTitle": "Transposition: {instr} und andere Instrumente",
-    "tTranspTransposing": "<p>{instr} ist ein <b>transponierendes Instrument</b>: Ein notiertes C klingt als {soundsNote} — {interval} {direction}. Um einen gewünschten klingenden Ton zu erhalten, notiert man daher {interval} {oppositeDirection}.</p>",
+    "tTranspTransposing": "<p>{instr} ist ein <b>transponierendes Instrument</b>: Ein notiertes C erklingt als {soundsNote} — {interval} {direction}. Um einen gewünschten klingenden Ton zu erhalten, notiert man daher {interval} {oppositeDirection}.</p>",
     "tTranspNon": "<p>{instr} ist <b>nicht transponierend</b>: Notierte Note und klingender Ton sind identisch. Die Tabelle unten zeigt dennoch, wie sich transponierende Instrumente zur klingenden Tonhöhe verhalten.</p>",
     "tTranspTable": "<p>Dasselbe Prinzip gilt für den Rest des Orchesters: <b>Klarinette in B</b> (große Sekunde aufwärts), <b>Horn in F</b> (reine Quinte aufwärts), <b>Altsaxophon in Es</b> (große Sexte aufwärts), <b>Kontrabass</b> (eine Oktave aufwärts). Faustregel: Der Name des Instruments ist der klingende Ton, wenn es ein notiertes C spielt.</p>",
-    "thConcert": "Klingend (Konzert)",
+    "thConcert": "Klingend",
     "thWritten": "Notiert für {instr}",
     "thWrittenSig": "Notierte Vorzeichen",
     "lower": "tiefer",
@@ -282,7 +282,7 @@
     "up": "aufwärts",
     "down": "abwärts",
     "tIntonasjonTitle": "Intonation auf Blechblasinstrumenten mit Ventilen",
-    "tIntonasjon": "<p>Die Ventile senken den Ton um feste Rohrlängen, doch Kombinationen werden zu kurz — deshalb sind manche Griffe systematisch verstimmt:</p><p><b>1·3 und 1·2·3 sind zu hoch.</b> Notiertes {noteD4} (1·3) und {noteCiss4} (1·2·3) sind die berüchtigten: den 3. Ventilzug ausziehen (ca. 1–1,5 cm bei 1·3, 2–2,5 cm bei 1·2·3).</p><p><b>Der 5. Naturton ist zu tief.</b> Notiertes {noteE5} auf offenem Griff liegt ~14 Cent zu tief — mit den Lippen korrigieren oder 1·2 (6. Naturton) als Alternativgriff verwenden.</p><p><b>Der 7. Naturton wird vermieden.</b> Offenes {noteB5} liegt ~31 Cent zu tief und wird nur für Jazz-Effekte („Shake“) verwendet — mit dem 1. Ventil spielen.</p><p>Das 3. Ventil allein ≈ 1·2 und dient als Alternativgriff für Triller und Intonation ({alt3list}).</p>",
+    "tIntonasjon": "<p>Die Ventile senken den Ton um feste Rohrlängen, doch Kombinationen werden zu kurz — deshalb sind manche Griffe systematisch verstimmt:</p><p><b>1·3 und 1·2·3 sind zu hoch.</b> Notiertes {noteD4} (1·3) und {noteCiss4} (1·2·3) sind die berüchtigten Kandidaten: den 3. Ventilzug ausziehen (ca. 1–1,5 cm bei 1·3, 2–2,5 cm bei 1·2·3).</p><p><b>Der 5. Naturton ist zu tief.</b> Notiertes {noteE5} auf offenem Griff liegt ~14 Cent zu tief — mit den Lippen korrigieren oder 1·2 (6. Naturton) als Alternativgriff verwenden.</p><p><b>Der 7. Naturton wird vermieden.</b> Offenes {noteB5} liegt ~31 Cent zu tief und wird nur für Jazz-Effekte („Shake“) verwendet — mit dem 1. Ventil spielen.</p><p>Das 3. Ventil allein ≈ 1·2 und dient als Alternativgriff für Triller und Intonation ({alt3list}).</p>",
     "tGrepTitle": "Vollständige Grifftabelle (chromatisch, notiert {low}–{high})",
     "tGrep": "<p>Alle Griffe für {instr}, vom tiefsten Ton ({low}) bis hinauf ins hohe Register. Töne der gewählten Skala sind hervorgehoben. Den Mauszeiger über eine Zelle halten für Alternativgriffe und Intonationstipps. Oktavzahlen nach internationalem Standard: C4 = eingestrichenes c.</p>",
     "tGrepPiccoloNote": "<p>Hinweis: Die Piccolotrompete hat üblicherweise ein 4. Ventil (senkt um eine reine Quarte), das den Tonumfang nach unten erweitert.</p>"

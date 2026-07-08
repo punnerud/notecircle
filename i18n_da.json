@@ -5,7 +5,7 @@
   },
   "ui": {
     "title": "Nodecirklen",
-    "subtitle": "Tonearter, skalaer, transponering og greb til hele orkestret. Vælg sprog og instrument, klik i kvintcirklen — og se noder, fortegn og greb fra begynder- til professionelt niveau.",
+    "subtitle": "Tonearter, skalaer, transponering og greb til hele orkestret. Vælg sprog og instrument, klik i kvintcirklen — og se noder, fortegn og greb fra begynderniveau til professionelt niveau.",
     "language": "Sprog",
     "instrument": "Instrument",
     "view": "Visning",
@@ -38,7 +38,7 @@
     "concertKey": "Klingende toneart (koncert)",
     "factSig": "Faste fortegn",
     "factRel": "Paralleltoneart (fælles fortegn)",
-    "factVar": "Variant-toneart (fælles grundtone)",
+    "factVar": "Varianttoneart (fælles grundtone)",
     "factDom": "Dominant (D)",
     "factSub": "Subdominant (S)",
     "factEnh": "Enharmonisk lig",
@@ -219,7 +219,7 @@
       "body": "Dur til 3–4 fortegn (de typiske orkestertonearter), mol i harmonisk og melodisk form, kromatisk skala, dominantseptim. Ottendedele ♩ ≈ 80–100, både bundet og med tungestød.",
       "tips": [
         "Øv skalaen bundet først, derefter artikuleret i samme tempo — altid med metronom.",
-        "Øv også oppefra og ned — nedturen afslører ujævnheder.",
+        "Øv også oppefra og ned — vejen ned afslører ujævnheder.",
         "Planlæg vejrtrækningen/strøget: den sidste tone skal være lige så fuld som den første."
       ],
       "brassTips": [
@@ -268,8 +268,8 @@
     "thDur": "Dur",
     "thMoll": "Mol",
     "thAccs": "Fortegnene",
-    "tParallellTitle": "Paralleltoneart og variant-toneart",
-    "tParallell": "<p>I dansk (og tysk) teori betyder <b>paralleltoneart</b> den dur- og moltoneart, der deler faste fortegn, med grundtoner en lille terts fra hinanden: {exKey} ↔ {exRel}. (På engelsk hedder det »relative key« — pas på ved oversættelser!)</p><p><b>Variant-toneart</b> er dur og mol på <i>samme grundtone</i>, f.eks. {exVar1} og {exVar2} — samme tonika, men tre fortegns forskel.</p><p>Mol findes i tre former: <b>naturlig</b> (som parallel dur), <b>harmonisk</b> (hævet 7. trin — giver ledetone og en karakteristisk forstørret sekund) og <b>melodisk</b> (hævet 6. og 7. trin opad; naturlig form nedad i klassisk tradition).</p>",
+    "tParallellTitle": "Paralleltoneart og varianttoneart",
+    "tParallell": "<p>I dansk (og tysk) teori betyder <b>paralleltoneart</b> den dur- og moltoneart, der deler faste fortegn, med grundtoner en lille terts fra hinanden: {exKey} ↔ {exRel}. (På engelsk hedder det »relative key« — pas på ved oversættelser!)</p><p><b>Varianttoneart</b> er dur og mol på <i>samme grundtone</i>, f.eks. {exVar1} og {exVar2} — samme tonika, men tre fortegns forskel.</p><p>Mol findes i tre former: <b>naturlig</b> (som parallel dur), <b>harmonisk</b> (hævet 7. trin — giver ledetone og en karakteristisk forstørret sekund) og <b>melodisk</b> (hævet 6. og 7. trin opad; naturlig form nedad i klassisk tradition).</p>",
     "tTranspTitle": "Transponering: {instr} og andre instrumenter",
     "tTranspTransposing": "<p>{instr} er et <b>transponerende instrument</b>: et noteret C klinger som {soundsNote} — {interval} {direction}. For at få en ønsket klingende tone noterer man derfor {interval} {oppositeDirection}.</p>",
     "tTranspNon": "<p>{instr} er <b>ikke-transponerende</b>: noteret node og klingende tone er den samme. Tabellen nedenfor viser alligevel, hvordan transponerende instrumenter forholder sig til klingende tonehøjde.</p>",
@@ -288,7 +288,7 @@
     "tGrepPiccoloNote": "<p>Bemærk: piccolotrompet har normalt en 4. ventil (sænker en ren kvart), som udvider registeret nedad.</p>"
   },
   "footer": {
-    "ruleTransposing": "{instr}: en noteret node klinger {interval} {direction}.",
+    "ruleTransposing": "{instr}: en noteret tone klinger {interval} {direction}.",
     "ruleNon": "{instr}: noteret og klingende tonehøjde er den samme."
   }
 }

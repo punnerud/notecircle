@@ -135,7 +135,7 @@
     "bebopdur": "Bebopdur",
     "arpdur": "Durtreklang",
     "arpmoll": "Molltreklang",
-    "arpdom7": "Dominantseptima",
+    "arpdom7": "Dominantseptimackord",
     "arpmaj7": "Maj7",
     "arpm7": "Moll7",
     "arpdim7": "Dim7",
@@ -209,21 +209,21 @@
       ],
       "brassTips": [
         "Långa toner först: 8+ slag på g¹ och c¹ (låga C) med lugn, öppen luftström.",
-        "Läppslurar på öppna deltoner (c¹–g¹–c²) utan ventiler före skalan.",
+        "Läppbindningar på öppna deltoner (c¹–g¹–c²) utan ventiler före skalan.",
         "Sjung eller ”buzza” skalan på munstycket innan du spelar den."
       ]
     },
     {
       "name": "Övad",
       "sub": "grad 3–5 / mellannivå",
-      "body": "Dur till 3–4 förtecken (blåsorkestertonarterna), moll i harmonisk och melodisk form, kromatisk skala, dominantseptima. Åttondelar ♩ ≈ 80–100, både bundet och artikulerat.",
+      "body": "Dur till 3–4 förtecken (blåsorkestertonarterna), moll i harmonisk och melodisk form, kromatisk skala, dominantseptimackord. Åttondelar ♩ ≈ 80–100, både bundet och artikulerat.",
       "tips": [
         "Öva skalan bundet först, sedan artikulerat i samma tempo — alltid med metronom.",
         "Öva också uppifrån och ned — nedvägen avslöjar ojämnheter.",
         "Planera andningen/stråket: sista tonen lika full som första."
       ],
       "brassTips": [
-        "Dagliga läppslurar (Arban/Schlossberg) på alla ventilkombinationer.",
+        "Dagliga läppbindningar (Arban/Schlossberg) på alla ventilkombinationer.",
         "Öva skalan bundet först, sedan artikulerat i samma tempo — alltid med metronom.",
         "Planera andningen: högst ett andetag per oktavlöpning, och sista tonen lika full som första."
       ]
@@ -234,12 +234,12 @@
       "body": "Alla 12 dur- och molltonarter utantill, arpeggion (dur, moll, dom7, dim7). Två oktaver där registret tillåter. Sextondelar ♩ ≈ 80–112, blandade artikulationer.",
       "tips": [
         "Öva skalorna också i tersmönster och med rytmvariationer.",
-        "Två oktaver kommer ur kontroll och avspändhet — inte kraft.",
+        "Två oktaver kommer av kontroll och avspändhet — inte kraft.",
         "Kyrkotonarterna: samma förtecken, ny utgångspunkt — hör skillnaden."
       ],
       "brassTips": [
         "Öva skalorna också uppifrån och ned, och i tersmönster.",
-        "Två oktaver kommer ur luftstöd och flexibilitet — inte munstyckestryck.",
+        "Två oktaver kommer av andningsstöd och flexibilitet — inte munstyckstryck.",
         "Kyrkotonarterna: samma förtecken, ny utgångspunkt — hör skillnaden."
       ]
     },
@@ -282,7 +282,7 @@
     "up": "upp",
     "down": "ned",
     "tIntonasjonTitle": "Intonation på bleckblås med ventiler",
-    "tIntonasjon": "<p>Ventilerna sänker tonen med fasta rörlängder, men kombinationer blir för korta — därför är vissa grepp systematiskt ostämda:</p><p><b>1·3 och 1·2·3 är höga.</b> Noterat {noteD4} (1·3) och {noteCiss4} (1·2·3) är de ökända: skjut ut tredje ventilbygeln (ca 1–1,5 cm för 1·3, 2–2,5 cm för 1·2·3).</p><p><b>5:e deltonen är låg.</b> Noterat {noteE5} med öppet grepp ligger ~14 cent lågt — justera med läppen, eller använd 1·2 (6:e deltonen) som alternativgrepp.</p><p><b>7:e deltonen undviks.</b> Öppet {noteB5} ligger ~31 cent lågt och används bara till jazzeffekter (”shake”) — spela den med första ventilen.</p><p>Tredje ventilen ensam ≈ 1·2 och används som alternativgrepp för drillar och intonation ({alt3list}).</p>",
+    "tIntonasjon": "<p>Ventilerna sänker tonen med fasta rörlängder, men kombinationer blir för korta — därför spelar vissa grepp systematiskt falskt:</p><p><b>1·3 och 1·2·3 är höga.</b> Noterat {noteD4} (1·3) och {noteCiss4} (1·2·3) är de ökända: skjut ut tredje ventilbygeln (ca 1–1,5 cm för 1·3, 2–2,5 cm för 1·2·3).</p><p><b>5:e deltonen är låg.</b> Noterat {noteE5} med öppet grepp ligger ~14 cent lågt — justera med läppen, eller använd 1·2 (6:e deltonen) som alternativgrepp.</p><p><b>7:e deltonen undviks.</b> Öppet {noteB5} ligger ~31 cent lågt och används bara till jazzeffekter (”shake”) — spela den med första ventilen.</p><p>Tredje ventilen ensam ≈ 1·2 och används som alternativgrepp för drillar och intonation ({alt3list}).</p>",
     "tGrepTitle": "Fullständig grepptabell (kromatisk, noterat {low}–{high})",
     "tGrep": "<p>Alla grepp för {instr}, från lägsta tonen ({low}) och upp i högt register. Toner som ingår i vald skala är markerade. Håll pekaren över en cell för alternativgrepp och intonationstips. Oktavtal enligt internationell standard: C4 = ettstrukna c.</p>",
     "tGrepPiccoloNote": "<p>Obs: piccolatrumpet har vanligtvis en fjärde ventil (sänker en ren kvart) som utökar registret nedåt.</p>"

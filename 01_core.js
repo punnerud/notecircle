@@ -305,7 +305,7 @@ const INSTRUMENTS = [
   { id: 'klar_bb',     group: 'woodwind', clef: 'treble', letters: 1,   semis: 2,   fing: null,     lo: 52, hi: 91 },
   { id: 'klar_a',      group: 'woodwind', clef: 'treble', letters: 2,   semis: 3,   fing: null,     lo: 52, hi: 91 },
   { id: 'klar_eb',     group: 'woodwind', clef: 'treble', letters: -2,  semis: -3,  fing: null,     lo: 52, hi: 88 },
-  { id: 'bassklar',    group: 'woodwind', clef: 'treble', letters: 8,   semis: 14,  fing: null,     lo: 50, hi: 84 },
+  { id: 'bassklar',    group: 'woodwind', clef: 'treble', letters: 8,   semis: 14,  fing: null,     lo: 51, hi: 84 },
   { id: 'fagott',      group: 'woodwind', clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 34, hi: 64 },
   { id: 'kontrafag',   group: 'woodwind', clef: 'bass',   letters: 7,   semis: 12,  fing: null,     lo: 34, hi: 60 },
   { id: 'sopransax',   group: 'woodwind', clef: 'treble', letters: 1,   semis: 2,   fing: null,     lo: 58, hi: 88 },
@@ -331,7 +331,7 @@ const INSTRUMENTS = [
   { id: 'tuba_eb',     group: 'brass',    clef: 'treble', letters: 12,  semis: 21,  fing: 'brass3', lo: 54, hi: 82 },
   { id: 'tuba_bb',     group: 'brass',    clef: 'treble', letters: 15,  semis: 26,  fing: 'brass3', lo: 54, hi: 80 },
   { id: 'piano',       group: 'other',    clef: 'treble', letters: 0,   semis: 0,   fing: null,     lo: 48, hi: 88 },
-  { id: 'klokkespill', group: 'other',    clef: 'treble', letters: -14, semis: -24, fing: null,     lo: 65, hi: 89 },
+  { id: 'klokkespill', group: 'other',    clef: 'treble', letters: -14, semis: -24, fing: null,     lo: 55, hi: 84 },
   { id: 'xylofon',     group: 'other',    clef: 'treble', letters: -7,  semis: -12, fing: null,     lo: 60, hi: 89 },
   { id: 'pauker',      group: 'other',    clef: 'bass',   letters: 0,   semis: 0,   fing: null,     lo: 40, hi: 55 },
 ];

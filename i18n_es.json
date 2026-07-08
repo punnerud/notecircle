@@ -12,7 +12,7 @@
     "viewConcert": "Sonido real (Do)",
     "viewWritten": "Escrito para {instr}",
     "naming": "Nombres de las notas",
-    "namingNative": "Solfeo (Do · Re · Mi)",
+    "namingNative": "Latino (Do · Re · Mi)",
     "namingIntl": "Internacional (B · B♭ · F♯)",
     "scale": "Escala",
     "range": "Ámbito",
@@ -27,7 +27,7 @@
     "stop": "Detener",
     "playSounding": "Reproducir en sonido real (como {instr})",
     "circleTitle": "El círculo de quintas",
-    "circleHint": "Anillo exterior: mayores. Anillo interior: menores. En el sentido del reloj = quinta ascendente (+1 sostenido); en sentido contrario = quinta descendente (+1 bemol).",
+    "circleHint": "Anillo exterior: mayores. Anillo interior: menores. En sentido horario = quinta ascendente (+1 sostenido); en sentido antihorario = quinta descendente (+1 bemol).",
     "dur": "Mayor",
     "moll": "Menor",
     "enhSwap": "Cambio enarmónico",
@@ -49,16 +49,16 @@
     "flatMany": "bemoles",
     "soundsAs": "Suena como <b>{key}</b> ({interval} {dir}).",
     "writtenAs": "En {instr} esto se escribe como <b>{key}</b> ({interval} {dir}).",
-    "nonTransposing": "{instr} es no transpositor: la altura escrita y el sonido real coinciden.",
+    "nonTransposing": "{instr} es un instrumento no transpositor: la altura escrita y el sonido real coinciden.",
     "staffHintWritten": "Las digitaciones corresponden a las notas escritas. Haz clic en una nota para escucharla.",
     "staffHintConcert": "Las notas están en sonido real; las digitaciones muestran las que usa {instr}. Haz clic en una nota para escucharla.",
     "staffHintNoFing": "Haz clic en una nota para escucharla.",
-    "stepsLabel": "Pasos",
+    "stepsLabel": "Tonos y semitonos",
     "stepsLegend": "1 = tono, ½ = semitono",
     "chromSteps": "solo semitonos (½ × 12 por octava)",
     "keyboard": "Teclado",
-    "kbdWritten": "Las notas escritas de la escala — suenan {interval} más grave.",
-    "kbdWrittenUp": "Las notas escritas de la escala — suenan {interval} más aguda.",
+    "kbdWritten": "Las notas escritas de la escala — suenan {interval} por debajo.",
+    "kbdWrittenUp": "Las notas escritas de la escala — suenan {interval} por encima.",
     "kbdConcert": "Las notas de la escala en sonido real.",
     "kbdRoot": "La tónica aparece rellena.",
     "levelsTitle": "De principiante a profesional",
@@ -109,7 +109,7 @@
   "keys": {
     "majorPattern": "{note} mayor",
     "minorPattern": "{note} menor",
-    "minorLowercase": true
+    "minorLowercase": false
   },
   "scales": {
     "dur": "Mayor (jónico)",
@@ -179,8 +179,8 @@
     "tromp_d": "Trompeta en Re",
     "tromp_eb": "Trompeta en Mi♭",
     "picctromp": "Trompeta piccolo en Si♭",
-    "kornett_bb": "Corneta en Si♭",
-    "kornett_eb": "Corneta soprano en Mi♭",
+    "kornett_bb": "Cornetín en Si♭",
+    "kornett_eb": "Cornetín soprano en Mi♭",
     "flygelhorn": "Fliscorno en Si♭",
     "basstromp": "Trompeta baja en Si♭",
     "horn_f": "Trompa en Fa",
@@ -201,7 +201,7 @@
     {
       "name": "Principiante",
       "sub": "escuela de música, 1.º–2.º año",
-      "body": "Mayor en Do, Fa y Sol (escritas), la menor hacia el final. Una octava, tranquilo y regular (♩ ≈ 60–72). El sonido antes que la técnica.",
+      "body": "Do, Fa y Sol mayor (tonalidades escritas); La menor hacia el final. Una octava, tranquilo y regular (♩ ≈ 60–72). El sonido antes que la técnica.",
       "tips": [
         "Primero notas largas: 8 o más pulsos por nota con una columna de aire o un arco tranquilo y uniforme.",
         "Canta la escala antes de tocarla — escucha la nota antes de producirla.",
@@ -209,7 +209,7 @@
       ],
       "brassTips": [
         "Primero notas largas: 8 o más pulsos en sol¹ y do¹ (do grave) con una columna de aire tranquila y abierta.",
-        "Ligaduras de labios sobre los armónicos al aire (do¹–sol¹–do²), sin pistones, antes de la escala.",
+        "Flexibilidades sobre los armónicos al aire (do¹–sol¹–do²), sin pistones, antes de la escala.",
         "Canta o haz «buzzing» de la escala en la boquilla antes de tocarla."
       ]
     },
@@ -223,7 +223,7 @@
         "Planifica la respiración o el arco: la última nota tan plena como la primera."
       ],
       "brassTips": [
-        "Ligaduras de labios diarias (Arban/Schlossberg) en todas las combinaciones de pistones.",
+        "Flexibilidades diarias (Arban/Schlossberg) en todas las combinaciones de pistones.",
         "Practica la escala primero ligada y luego picada al mismo tempo — siempre con metrónomo.",
         "Planifica la respiración: como máximo una respiración por cada octava, y la última nota tan plena como la primera."
       ]
@@ -261,7 +261,7 @@
   ],
   "theory": {
     "tKvintTitle": "Cómo leer el círculo de quintas",
-    "tKvint": "<p>El círculo de quintas ordena todas las tonalidades según cuántas alteraciones tiene su armadura. Un paso <b>en el sentido del reloj</b> es una quinta justa ascendente — y un sostenido más (o un bemol menos). Un paso <b>en sentido contrario</b> es una quinta descendente — un bemol más.</p><p>Las tonalidades vecinas comparten seis de sus siete notas y por eso suenan estrechamente emparentadas. Esa es la razón de que la <b>dominante (D)</b> — la quinta superior — y la <b>subdominante (S)</b> — la quinta inferior — sean las funciones armónicas más importantes junto a la tónica.</p><p>El anillo exterior y el interior en la misma posición comparten armadura: son <b>tonalidades relativas</b> (p. ej. {exMajor} y {exMinor}). En la parte inferior del círculo, el lado de los sostenidos y el de los bemoles se encuentran en las tonalidades <b>enarmónicas</b>: las mismas notas reales, dos escrituras distintas.</p>",
+    "tKvint": "<p>El círculo de quintas ordena todas las tonalidades según cuántas alteraciones tiene su armadura. Un paso <b>en sentido horario</b> es una quinta justa ascendente — y un sostenido más (o un bemol menos). Un paso <b>en sentido antihorario</b> es una quinta descendente — un bemol más.</p><p>Las tonalidades vecinas comparten seis de sus siete notas y por eso suenan estrechamente emparentadas. Esa es la razón de que la <b>dominante (D)</b> — la quinta superior — y la <b>subdominante (S)</b> — la quinta inferior — sean las funciones armónicas más importantes junto a la tónica.</p><p>El anillo exterior y el interior en la misma posición comparten armadura: son <b>tonalidades relativas</b> (p. ej. {exMajor} y {exMinor}). En la parte inferior del círculo, el lado de los sostenidos y el de los bemoles se encuentran en las tonalidades <b>enarmónicas</b>: las mismas notas reales, dos escrituras distintas.</p>",
     "tFortegnTitle": "La armadura: orden de las alteraciones y todas las tonalidades",
     "tFortegn": "<p>Los sostenidos aparecen siempre en el orden <b>{sharpOrder}</b> (por quintas ascendentes). Los bemoles aparecen en el orden inverso: <b>{flatOrder}</b> (por quintas descendentes).</p><p>Dos reglas útiles: el <b>último sostenido</b> está un semitono por debajo de la tónica de la tonalidad mayor (es la sensible). El <b>penúltimo bemol</b> <i>es</i> la tonalidad mayor.</p>",
     "thSig": "Armadura",
@@ -272,13 +272,13 @@
     "tParallell": "<p>En la teoría española, la <b>tonalidad relativa</b> es la pareja de mayor y menor que comparte armadura, con las tónicas a distancia de tercera menor: {exKey} ↔ {exRel}. (En la teoría alemana y nórdica se la llama «tonalidad paralela» — ¡cuidado con las traducciones!)</p><p>La <b>tonalidad homónima</b> es la pareja de mayor y menor sobre <i>la misma tónica</i>, p. ej. {exVar1} y {exVar2} — misma tónica, pero tres alteraciones de diferencia.</p><p>El modo menor existe en tres formas: <b>natural</b> (como su relativo mayor), <b>armónica</b> (7.º grado elevado — aporta la sensible y una característica segunda aumentada) y <b>melódica</b> (6.º y 7.º grados elevados al ascender; forma natural al descender en la tradición clásica).</p>",
     "tTranspTitle": "Transporte: {instr} y otros instrumentos",
     "tTranspTransposing": "<p>{instr} es un <b>instrumento transpositor</b>: un Do escrito suena como {soundsNote} — {interval} {direction}. Para obtener el sonido real deseado se escribe, por tanto, {interval} {oppositeDirection}.</p>",
-    "tTranspNon": "<p>{instr} es <b>no transpositor</b>: la nota escrita y el sonido real coinciden. Aun así, la tabla siguiente muestra cómo se relacionan los instrumentos transpositores con la altura real.</p>",
+    "tTranspNon": "<p>{instr} es un <b>instrumento no transpositor</b>: la nota escrita y el sonido real coinciden. Aun así, la tabla siguiente muestra cómo se relacionan los instrumentos transpositores con la altura real.</p>",
     "tTranspTable": "<p>El mismo principio vale para el resto de la orquesta: el <b>clarinete en Si♭</b> (una segunda mayor ascendente), la <b>trompa en Fa</b> (una quinta justa ascendente), el <b>saxofón alto en Mi♭</b> (una sexta mayor ascendente), el <b>contrabajo</b> (una octava ascendente). Regla práctica: el nombre del instrumento es el sonido real que produce cuando toca un Do escrito.</p>",
     "thConcert": "Sonido real (concierto)",
     "thWritten": "Escrito para {instr}",
     "thWrittenSig": "Armadura escrita",
-    "lower": "más grave",
-    "higher": "más aguda",
+    "lower": "por debajo",
+    "higher": "por encima",
     "up": "ascendente",
     "down": "descendente",
     "tIntonasjonTitle": "La afinación en los metales con pistones",

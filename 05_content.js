@@ -58,6 +58,7 @@ function renderLevels() {
       state.scale = k.scale;
       state.ring = k.ring;
       state.tonic = state.view === 'written' ? k.w : transposeBy(k.w, -currentInstr().letters, -currentInstr().semis, q);
+      state.concertTonic = null;
       document.getElementById('scaleSel').value = k.scale;
       renderAll();
     });

@@ -76,6 +76,7 @@ function intervalName(letters, semis) {
   const p = intervalParts(letters, semis);
   const iv = T('intervals');
   if (p.num === 0 && p.octs > 0) return p.octs === 1 ? iv.octaveOne : iv.octaveTwo;
+  if (p.num === 0 && p.octs === 0 && iv.unison) return iv.unison;
   const core = fmt(iv.pattern, { qual: iv.qualities[p.qual], num: iv.numbers[p.num] });
   if (p.octs === 0) return core;
   const oct = p.octs === 1 ? iv.octaveOne : iv.octaveTwo;

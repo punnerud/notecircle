@@ -210,7 +210,7 @@ function renderStaff(state, built, writtenBuilt, clefName) {
         tip += ' — ' + T('ui.fingering') + ': ' + comboText(fing.f);
         if (fing.a) tip += ' (' + T('ui.alt') + '.: ' + fing.a.map(comboText).join(', ') + ')';
         if (fing.i) tip += '. ' + T('intonation.' + fing.i);
-        if (state.view === 'concert') tip += ' [' + T('ui.forWritten', { note: dispNote(wn) }) + ']';
+        if (state.view === 'concert' && (ins.letters || ins.semis)) tip += ' [' + T('ui.forWritten', { note: dispNote(wn) }) + ']';
       } else {
         txt(g, x, valveY + 4, '—', { 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--muted)' });
         tip += ' — ' + T('ui.outOfRange');

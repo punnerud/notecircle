@@ -164,12 +164,19 @@ function initSeg(id, attr, fn) {
 function setInstrument(id) {
   const oldIns = currentInstr();
   const q = quality();
-  // Bevar klingende toneart på tvers av instrumentbytte
-  const concertTonic = state.view === 'written' ? transposeBy(state.tonic, -oldIns.letters, -oldIns.semis, q) : state.tonic;
+  // Bevar klingende toneart på tvers av instrumentbytte (bufret staving om tilgjengelig)
+  let concertTonic = state.view === 'written' ? transposeBy(state.tonic, -oldIns.letters, -oldIns.semis, q) : state.tonic;
+  if (state.view === 'written' && state.concertTonic && pcOf(state.concertTonic) === pcOf(concertTonic)) concertTonic = state.concertTonic;
   state.instrId = id;
   const ins = currentInstr();
   if (!(ins.letters || ins.semis)) state.view = 'concert';
-  state.tonic = state.view === 'written' ? transposeBy(concertTonic, ins.letters, ins.semis, q) : concertTonic;
+  if (state.view === 'written') {
+    state.tonic = transposeBy(concertTonic, ins.letters, ins.semis, q);
+    state.concertTonic = concertTonic;
+  } else {
+    state.tonic = concertTonic;
+    state.concertTonic = null;
+  }
   renderAll();
 }
 function init() {
@@ -201,8 +208,14 @@ function init() {
     const ring = SCALES[state.scale].ring;
     if (ring !== state.ring) {
       const slot = findSlot(pcOf(state.tonic), ring);
-      if (slot) state.tonic = CIRCLE[slot.slot][ring][slot.enh];
+      if (slot) {
+        const arr = CIRCLE[slot.slot][ring];
+        let pick = arr[slot.enh];
+        for (const t of arr) if (t.letter === state.tonic.letter && t.alt === state.tonic.alt) pick = t;
+        state.tonic = pick;
+      }
       state.ring = ring;
+      state.concertTonic = null;
     }
     renderAll();
   });
@@ -211,7 +224,14 @@ function init() {
     if (v === state.view) return;
     const ins = currentInstr();
     const q = quality();
-    state.tonic = v === 'written' ? transposeBy(state.tonic, ins.letters, ins.semis, q) : transposeBy(state.tonic, -ins.letters, -ins.semis, q);
+    if (v === 'written') {
+      state.concertTonic = state.tonic; // husk klingende staving for tapsfri rundtur
+      state.tonic = transposeBy(state.tonic, ins.letters, ins.semis, q);
+    } else {
+      const back = transposeBy(state.tonic, -ins.letters, -ins.semis, q);
+      state.tonic = (state.concertTonic && pcOf(state.concertTonic) === pcOf(back)) ? state.concertTonic : back;
+      state.concertTonic = null;
+    }
     state.view = v;
     renderAll();
   });
@@ -232,6 +252,7 @@ function init() {
     if (arr.length < 2) return;
     const cur = arr.findIndex(x => x.letter === state.tonic.letter && x.alt === state.tonic.alt);
     state.tonic = arr[cur >= 0 ? 1 - cur : 0];
+    state.concertTonic = null;
     renderAll();
   });
 

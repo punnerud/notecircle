@@ -82,6 +82,7 @@ const state = {
   dir: 'up',
   tempo: 96,
   level: 1,
+  concertTonic: null, // bufret klingende staving for tapsfri visnings-rundtur
 };
 let currentNoteRefs = [];
 function currentInstr() { return INSTR_BY_ID[state.instrId]; }
@@ -89,6 +90,7 @@ function isTransposing() { const i = currentInstr(); return !!(i.letters || i.se
 function quality() { return state.ring === 'maj' ? 'dur' : 'moll'; }
 
 function selectSlot(slot, ring) {
+  state.concertTonic = null;
   const arr = CIRCLE[slot][ring];
   let pick = arr[0];
   for (const t of arr) if (t.letter === state.tonic.letter && t.alt === state.tonic.alt) pick = t;
@@ -101,6 +103,7 @@ function selectSlot(slot, ring) {
   renderAll();
 }
 function setTonic(t, ring) {
+  state.concertTonic = null;
   state.tonic = t;
   if (ring && SCALES[state.scale].ring !== ring) {
     state.scale = ring === 'maj' ? 'dur' : 'nmoll';

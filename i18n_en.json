@@ -208,8 +208,8 @@
         "Use a mirror and listen: an even tone on every note matters more than tempo."
       ],
       "brassTips": [
-        "Long tones first: 8+ beats on g¹ and c¹ (low C) with a calm, open airstream.",
-        "Lip slurs on the open partials (c¹–g¹–c²) without valves before the scale.",
+        "Long tones first: 8+ beats on G4 and C4 (low C) with a calm, open airstream.",
+        "Lip slurs on the open partials (C4–G4–C5) without valves before the scale.",
         "Sing or “buzz” the scale on the mouthpiece before you play it."
       ]
     },
@@ -267,7 +267,7 @@
     "thSig": "Key signature",
     "thDur": "Major",
     "thMoll": "Minor",
-    "thAccs": "Accidentals",
+    "thAccs": "Sharps/flats",
     "tParallellTitle": "Relative key and parallel key",
     "tParallell": "<p>In English theory, the <b>relative key</b> is the major or minor key that shares the same key signature, with tonics a minor third apart: {exKey} ↔ {exRel}. (Beware in translation: German and Scandinavian theory calls this the “parallel key” — a false friend!)</p><p>The <b>parallel key</b> is major and minor on the <i>same tonic</i>, e.g. {exVar1} and {exVar2} — same tonic, but three accidentals apart. (In Germanic terminology this is the “variant key.”)</p><p>Minor comes in three forms: <b>natural</b> (as its relative major), <b>harmonic</b> (raised 7th degree — providing a leading tone and a characteristic augmented second) and <b>melodic</b> (raised 6th and 7th degrees ascending; the natural form descending in the classical tradition).</p>",
     "tTranspTitle": "Transposition: {instr} and other instruments",

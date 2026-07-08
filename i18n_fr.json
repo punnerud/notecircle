@@ -13,7 +13,7 @@
     "viewWritten": "Écrit pour {instr}",
     "naming": "Noms des notes",
     "namingNative": "Solfège (Do · Ré · Mi)",
-    "namingIntl": "Internationale (B · B♭ · F♯)",
+    "namingIntl": "Notation internationale (B · B♭ · F♯)",
     "scale": "Gamme",
     "range": "Étendue",
     "oct1": "1 octave",
@@ -60,7 +60,7 @@
     "kbdWritten": "Notes écrites de la gamme — elles sonnent {interval} plus bas.",
     "kbdWrittenUp": "Notes écrites de la gamme — elles sonnent {interval} plus haut.",
     "kbdConcert": "Notes de la gamme en sons réels.",
-    "kbdRoot": "La tonique est indiquée en plein.",
+    "kbdRoot": "La tonique est affichée en couleur pleine.",
     "levelsTitle": "Du débutant au professionnel",
     "levelsHint": "Progression habituelle pour les gammes. Cliquez sur un niveau pour voir les recommandations, et sur une tonalité pour l'afficher.",
     "theoryTitle": "Théorie et références",
@@ -104,7 +104,8 @@
     "octaveOne": "une octave",
     "octaveTwo": "deux octaves",
     "pattern": "une {num} {qual}",
-    "octavePlus": "{oct} et une {num} {qual}"
+    "octavePlus": "{oct} et une {num} {qual}",
+    "unison": "un unisson juste"
   },
   "keys": {
     "majorPattern": "{note} majeur",
@@ -215,8 +216,8 @@
     },
     {
       "name": "Intermédiaire",
-      "sub": "degrés 3–5 / 2e cycle",
-      "body": "Majeur jusqu'à 3–4 altérations (les tonalités d'harmonie), mineur harmonique et mélodique, gamme chromatique, septième de dominante. Croches à ♩ ≈ 80–100, en lié comme en détaché.",
+      "sub": "niveaux 3–5 / 2e cycle",
+      "body": "Majeur jusqu'à 3–4 altérations (les tonalités de l'orchestre d'harmonie), mineur harmonique et mélodique, gamme chromatique, septième de dominante. Croches à ♩ ≈ 80–100, en lié comme en détaché.",
       "tips": [
         "Travaillez la gamme d'abord en lié, puis en articulé au même tempo — toujours avec le métronome.",
         "Travaillez aussi en partant du haut — la descente révèle les inégalités.",
@@ -230,7 +231,7 @@
     },
     {
       "name": "Avancé",
-      "sub": "degrés 6–8 / 3e cycle",
+      "sub": "niveaux 6–8 / 3e cycle",
       "body": "Les 12 tonalités majeures et mineures par cœur, arpèges (majeur, mineur, 7e de dominante, 7e diminuée). Deux octaves quand le registre le permet. Doubles croches à ♩ ≈ 80–112, articulations variées.",
       "tips": [
         "Travaillez aussi les gammes en tierces et avec des variations rythmiques.",
@@ -263,7 +264,7 @@
     "tKvintTitle": "Comment lire le cycle des quintes",
     "tKvint": "<p>Le cycle des quintes classe toutes les tonalités selon le nombre d'altérations à l'armure. Un pas <b>dans le sens horaire</b> correspond à une quinte juste vers le haut — et à un dièse de plus (ou un bémol de moins). Un pas <b>dans le sens antihoraire</b> correspond à une quinte vers le bas — un bémol de plus.</p><p>Les tonalités voisines partagent six notes sur sept et sonnent donc étroitement apparentées. C'est pourquoi la <b>dominante (D)</b> — la quinte supérieure — et la <b>sous-dominante (S)</b> — la quinte inférieure — sont les fonctions harmoniques les plus importantes après la tonique.</p><p>À la même position, l'anneau extérieur et l'anneau intérieur partagent la même armure : ce sont des <b>tonalités relatives</b> (p. ex. {exMajor} et {exMinor}). En bas du cercle, le côté des dièses et celui des bémols se rejoignent dans les tonalités <b>enharmoniques</b> : les mêmes sons réels, deux écritures.</p>",
     "tFortegnTitle": "Altérations : ordre et toutes les tonalités",
-    "tFortegn": "<p>Les dièses apparaissent toujours dans l'ordre <b>{sharpOrder}</b> (par quintes ascendantes). Les bémols suivent l'ordre inverse : <b>{flatOrder}</b> (par quintes descendantes).</p><p>Deux moyens mnémotechniques utiles : le <b>dernier dièse</b> se trouve un demi-ton sous la tonique du ton majeur (c'est la sensible). L'<b>avant-dernier bémol</b> <i>est</i> la tonalité majeure.</p>",
+    "tFortegn": "<p>Les dièses apparaissent toujours dans l'ordre <b>{sharpOrder}</b> (par quintes ascendantes). Les bémols suivent l'ordre inverse : <b>{flatOrder}</b> (par quintes descendantes).</p><p>Deux moyens mnémotechniques utiles : le <b>dernier dièse</b> se trouve un demi-ton sous la tonique de la tonalité majeure (c'est la sensible). L'<b>avant-dernier bémol</b> <i>est</i> la tonalité majeure.</p>",
     "thSig": "Armure",
     "thDur": "Majeur",
     "thMoll": "Mineur",
